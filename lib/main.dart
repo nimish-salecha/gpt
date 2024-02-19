@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gpt/Screens/signin_page.dart';
-import 'package:gpt/Screens/signup_page.dart';
+import 'package:gpt/screens/signin_page.dart';
+import 'package:gpt/screens/signup_page.dart';
 
 void main() => runApp(MyApp());
 
