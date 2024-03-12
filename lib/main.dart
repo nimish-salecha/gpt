@@ -58,7 +58,7 @@ class HomePage extends StatelessWidget {
       body: Column(
         children: [
           Header(),
-          Home(),
+          // Home(),
           // Your page content goes here
            Text('Welcome to my app!'),
           // Footer(),
