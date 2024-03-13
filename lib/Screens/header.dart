@@ -1,5 +1,7 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+// import 'package:flutter/services.dart';
 
 void main() {
   runApp(
@@ -15,7 +17,7 @@ class Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final dwidth = MediaQuery.of(context).size.width;
     final dheight = MediaQuery.of(context).size.height;
-    print("the width of screen is $dwidth}");
+    // print("the width of screen is $dwidth}");
     return  Expanded( 
       // body: SingleChildScrollView(
         child: Container(
