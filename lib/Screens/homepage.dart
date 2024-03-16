@@ -30,7 +30,7 @@ class HomePage extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               fixedSize: Size(dwidth*0.6, dheight*0.1),
               backgroundColor: Colors.indigo,
-              foregroundColor: Colors.black,
+              foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25)),
             ),
@@ -51,7 +51,8 @@ class HomePage extends StatelessWidget {
             icon: Icon(Icons.margin),
             label: Text("Join with a code"),
             style: OutlinedButton.styleFrom(
-              primary: Colors.indigo,
+              backgroundColor: Colors.indigo,
+              foregroundColor: Colors.white,
               side: BorderSide(color: Colors.indigo),
               fixedSize: Size(dwidth*0.6, dheight*0.1),
               shape: RoundedRectangleBorder(

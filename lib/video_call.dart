@@ -1,24 +1,40 @@
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:flutter/material.dart';
 
-class VideoCall extends StatelessWidget {
 
+class VideoCall extends StatefulWidget {
+  @override
+  _VideoCallState createState() => _VideoCallState();
+}
+
+class _VideoCallState extends State<VideoCall> {
   final AgoraClient _client = AgoraClient(
     agoraConnectionData: AgoraConnectionData(
       appId: "8adade7c65554a28907be8616ffaba5e",
-      tempToken: "007eJxTYPj09PaC62dazfMPnXjQkmElJnK/9YxMxLQTq6QFznKJW1xVYLBITElMSTVPNjM1NTVJNLKwNDBPSrUwMzRLS0tMSjRN7ff/mNoQyMigHWnNxMgAgSA+C0NJanEJAwMA3dsgqQ==",
+      tempToken: "007eJxTYFg1wbSsdg1r0MyJ2ivbf6TnB9VGcvznnuTAHeI48ad1Va0Cg0ViSmJKqnmymampqUmikYWlgXlSqoWZoVlaWmJSommq6p6vqQ2BjAwWaWtZGBkgEMRnYShJLS5hYAAA9fkesg==",
       channelName: "test"
     ),
     enabledPermission: [Permission.camera,Permission.microphone]
   );
+
+  @override
+  void initState() {
+    super.initState();
+    initAgora();
+  }
+
+  void initAgora() async {
+    await _client.initialize();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Stack(
           children: [
-            AgoraVideoViewer(client: _client,),
-            AgoraVideoButtons(client: _client)
+            AgoraVideoViewer(client:_client,),
+            AgoraVideoButtons(client:_client)
           ]
         ),
       ),
@@ -26,64 +42,66 @@ class VideoCall extends StatelessWidget {
   }
 }
 
-// class VideoCall extends StatefulWidget {
-//   String channelName = "test";
 
-//   VideoCall({required this.channelName});
-//   @override
-//   _VideoCallState createState() => _VideoCallState();
-// }
+//git code video 6--------------
+// // class VideoCall extends StatefulWidget {
+// //   String channelName = "test";
 
-// class _VideoCallState extends State<VideoCall> {
-//   late final AgoraClient _client;
-//   bool _loading = true;
-//   String tempToken = "";
+// //   VideoCall({required this.channelName});
+// //   @override
+// //   _VideoCallState createState() => _VideoCallState();
+// // }
 
-//   @override
-//   void initState() {
-//     getToken();
-//     super.initState();
-//   }
+// // class _VideoCallState extends State<VideoCall> {
+// //   late final AgoraClient _client;
+// //   bool _loading = true;
+// //   String tempToken = "";
 
-//   Future<void> getToken() async {
-//     String link =
-//         "https://agora-node-tokenserver-1.davidcaleb.repl.co/access_token?channelName=${widget.channelName}";
+// //   @override
+// //   void initState() {
+// //     getToken();
+// //     super.initState();
+// //   }
 
-//     Response _response = await get(Uri.parse(link));
-//     Map data = jsonDecode(_response.body);
-//     setState(() {
-//       tempToken = data["007eJxTYPj09PaC62dazfMPnXjQkmElJnK/9YxMxLQTq6QFznKJW1xVYLBITElMSTVPNjM1NTVJNLKwNDBPSrUwMzRLS0tMSjRN7ff/mNoQyMigHWnNxMgAgSA+C0NJanEJAwMA3dsgqQ=="];
-//     });
-//     _client = AgoraClient(
-//         agoraConnectionData: AgoraConnectionData(
-//           appId: "8adade7c65554a28907be8616ffaba5e",
-//           tempToken: tempToken,
-//           channelName: widget.channelName,
-//         ),
-//         enabledPermission: [Permission.camera, Permission.microphone]);
-//     Future.delayed(Duration(seconds: 1)).then(
-//       (value) => setState(() => _loading = false),
-//     );
-//   }
+// //   Future<void> getToken() async {
+// //     String link =
+// //         "https://agora-node-tokenserver-1.davidcaleb.repl.co/access_token?channelName=${widget.channelName}";
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SafeArea(
-//         child: _loading
-//             ? Center(
-//                 child: CircularProgressIndicator(),
-//               )
-//             : Stack(
-//                 children: [
-//                   AgoraVideoViewer(
-//                     client: _client,
-//                   ),
-//                   AgoraVideoButtons(client: _client)
-//                 ],
-//               ),
-//       ),
-//     );
-//     ;
-//   }
-// }
+// //     Response _response = await get(Uri.parse(link));
+// //     Map data = jsonDecode(_response.body);
+// //     setState(() {
+// //       tempToken = data["007eJxTYPj09PaC62dazfMPnXjQkmElJnK/9YxMxLQTq6QFznKJW1xVYLBITElMSTVPNjM1NTVJNLKwNDBPSrUwMzRLS0tMSjRN7ff/mNoQyMigHWnNxMgAgSA+C0NJanEJAwMA3dsgqQ=="];
+// //     });
+// //     _client = AgoraClient(
+// //         agoraConnectionData: AgoraConnectionData(
+// //           appId: "8adade7c65554a28907be8616ffaba5e",
+// //           tempToken: tempToken,
+// //           channelName: widget.channelName,
+// //         ),
+// //         enabledPermission: [Permission.camera, Permission.microphone]);
+// //     Future.delayed(Duration(seconds: 1)).then(
+// //       (value) => setState(() => _loading = false),
+// //     );
+// //   }
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     return Scaffold(
+// //       body: SafeArea(
+// //         child: _loading
+// //             ? Center(
+// //                 child: CircularProgressIndicator(),
+// //               )
+// //             : Stack(
+// //                 children: [
+// //                   AgoraVideoViewer(
+// //                     client: _client,
+// //                   ),
+// //                   AgoraVideoButtons(client: _client)
+// //                 ],
+// //               ),
+// //       ),
+// //     );
+// //    ;
+// //  }
+// // }

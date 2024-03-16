@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "179804533123",
+    "project_id": "gptt-6ae89",
+    "storage_bucket": "gptt-6ae89.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:179804533123:android:7817d05436f5df33c4c6b6",
+        "android_client_info": {
+          "package_name": "com.example.gpt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWBXLAvkAao5zAHsuRd8f0jYZ21WcQSH8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

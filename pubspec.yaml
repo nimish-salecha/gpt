@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   get: 
   agora_uikit: 
+  firebase_core: ^2.27.0
+  cloud_firestore: ^4.15.8
 
 dev_dependencies:
   flutter_test:

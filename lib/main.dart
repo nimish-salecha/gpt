@@ -1,14 +1,27 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gpt/screens/homepage.dart';
 import 'package:gpt/screens/signin_page.dart';
 import 'package:gpt/screens/signup_page.dart';
-// import 'screens/header.dart';
+import 'screens/header.dart';
 // import 'screens/home.dart';
 
-void main() => runApp(MyApp());
+// void main() => runApp(MyApp());
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  addUser("sher", "s@gmail.com");
+  runApp(MyApp());
+}
 
 // ignore: use_key_in_widget_constructors
 class MyApp extends StatelessWidget {
@@ -20,7 +33,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      home: Header(),
       routes: {
         '/signin': (context) => SignInPage(),
         '/signup': (context) => SignUpPage(),
@@ -28,6 +41,74 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+//-------firebase cde- hiyu------
+Future<void> addUser(String name, String email) {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  return users
+      .add({
+        'name': name,
+        'email': email,
+      })
+      .then((value) => print("User added successfully!"))
+      .catchError((error) => print("Failed to add user: $error"));
+}
+
+Future<void> fetchUsers() {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  return users.get().then((QuerySnapshot snapshot) {
+    snapshot.docs.forEach((doc) {
+      print('${doc.id} => ${doc.data()}');
+    });
+  }).catchError((error) => print("Failed to fetch users: $error"));
+}
+
+//updating data:
+
+Future<void> updateUserEmail(String userId, String newEmail) {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  return users
+      .doc(userId)
+      .update({'email': newEmail})
+      .then((value) => print("User email updated successfully!"))
+      .catchError((error) => print("Failed to update user email: $error"));
+}
+
+Future<void> deleteUser(String userId) {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  return users
+      .doc(userId)
+      .delete()
+      .then((value) => print("User deleted successfully!"))
+      .catchError((error) => print("Failed to delete user: $error"));
+}
+
+Stream<QuerySnapshot> usersStream =
+    FirebaseFirestore.instance.collection('users').snapshots();
+
+// usersStream.listen((QuerySnapshot snapshot) {
+//   snapshot.docs.forEach((doc) {
+//     print('${doc.id} => ${doc.data()}');
+//   });
+// });
+
+Future<void> fetchUsersAboveAge(int minAge) {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  return users
+      .where('age', isGreaterThan: minAge)
+      .get()
+      .then((QuerySnapshot snapshot) {
+    snapshot.docs.forEach((doc) {
+      print('${doc.id} => ${doc.data()}');
+    });
+  }).catchError((error) => print("Failed to fetch users: $error"));
+}
+//-----------------
 
 // // ignore: use_key_in_widget_constructors
 // class HomePage extends StatelessWidget {
