@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       title: 'GPT App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-      ),
+      ),    //used for first function(page)
       home: Header(),
       routes: {
         '/signin': (context) => SignInPage(),

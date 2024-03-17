@@ -51,8 +51,7 @@ class JoinWithCode extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                Get.to(() => VideoCall());
-                // channelName: _controller.text.trim()
+                Get.to(() => VideoCall(channelName: _controller.text.trim()));
               },
               style: ElevatedButton.styleFrom(
                 fixedSize: Size(dwidth*0.4, dheight*0.08),

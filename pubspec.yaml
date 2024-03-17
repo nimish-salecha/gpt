@@ -39,6 +39,7 @@ dependencies:
   agora_uikit: 
   firebase_core: ^2.27.0
   cloud_firestore: ^4.15.8
+  google_sign_in: ^6.2.1
 
 dev_dependencies:
   flutter_test:
