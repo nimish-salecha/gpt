@@ -2,9 +2,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gpt/video_call.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:uuid/uuid.dart';
+
 
 class NewMeeting extends StatefulWidget {
   NewMeeting({Key? key}) : super(key: key);
+
+  // var uuid = Uuid();
 
   @override
   _NewMeetingState createState() => _NewMeetingState();
@@ -15,8 +21,8 @@ class _NewMeetingState extends State<NewMeeting> {
 
   @override
   void initState() {
-    // var uuid = Uuid();
-    // _meetingCode = uuid.v1().substring(0, 8);
+    var uuid = Uuid();
+    _meetingCode = uuid.v1().substring(0, 8);
     super.initState();
   }
 
@@ -43,7 +49,7 @@ class _NewMeetingState extends State<NewMeeting> {
             ),
             SizedBox(height: dheight*0.02),
             Text(
-              "Enter meeting code below",
+              "New meeting code below",
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
             ),
             Padding(
@@ -65,7 +71,7 @@ class _NewMeetingState extends State<NewMeeting> {
             Divider(thickness: 1, height: 40, indent: 20, endIndent: 20),
             ElevatedButton.icon(
               onPressed: () {
-                // Share.share("Meeting Code : $_meetingCode");
+                Share.share("Meeting Code : $_meetingCode");
               },
               icon: Icon(Icons.arrow_drop_down),
               label: Text("Share invite"),
@@ -80,12 +86,12 @@ class _NewMeetingState extends State<NewMeeting> {
             SizedBox(height: dheight*0.03),
             OutlinedButton.icon(
               onPressed: () {
-                // Get.to(VideoCall(channelName: _meetingCode.trim()));
+                Get.to(VideoCall(channelName: _meetingCode.trim()));
               },
               icon: Icon(Icons.video_call),
               label: Text("Start Debate"),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.indigo,
+                foregroundColor: const Color.fromARGB(255, 31, 39, 85),
                 side: BorderSide(color: Colors.indigo),
                 fixedSize: Size(dwidth*0.9, dheight*0.06),
                 shape: RoundedRectangleBorder(
