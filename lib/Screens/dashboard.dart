@@ -1,13 +1,15 @@
+//          User Dash Board (profile)
 //--------V2---forrmated & (with appbar)-----------------
-// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, prefer_final_fields, prefer_const_constructors
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, prefer_final_fields, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 class Dashboard extends StatefulWidget {
   @override
   _DashboardState createState() => _DashboardState();
 }
-
+        //used to set content switch of past and future debates
 class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
 
@@ -33,7 +35,9 @@ class _DashboardState extends State<Dashboard> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.share),
-            onPressed: () {}, //user profil link
+            onPressed: () {
+              Share.share("User Profile Link");
+            }, //user profil link
           ),
         ],
       ),
@@ -79,24 +83,46 @@ class _DashboardState extends State<Dashboard> {
           ),
 
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
+              SizedBox(width: dwidth*0.05,),
               Container(
-                padding: EdgeInsets.all(8.0),
+                width: dwidth*0.4 ,
+                // padding: EdgeInsets.all(6.0),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.blueAccent),
                   borderRadius: BorderRadius.circular(5.0),
                 ),
-                child: Text('Participation: value'),
+                child: Column(
+                  children: [
+                    Text("value",
+                      style: TextStyle(
+                          fontSize: 20.0,
+                        ),
+                    ),
+                    Text('Participated'),
+                  ],
+                ),
               ),
               Container(
-                padding: EdgeInsets.all(8.0),
+                width: dwidth*0.4 ,
+                // padding: EdgeInsets.all(6.0),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.blueAccent),
                   borderRadius: BorderRadius.circular(5.0),
                 ),
-                child: Text('Winner: value'),
+                child: Column(
+                  children: [
+                    Text("value",
+                      style: TextStyle(
+                          fontSize: 20.0,
+                        ),
+                    ),
+                    Text('Winned'),
+                  ],
+                ),
               ),
+              SizedBox(width: dwidth*0.05,),
             ],
           ),
             SizedBox(height: dheight*0.02,),
@@ -115,7 +141,7 @@ class _DashboardState extends State<Dashboard> {
         ),
         SizedBox(width: 10),
         ElevatedButton(
-          onPressed: () => _onItemTapped(0),
+          onPressed: () => _onItemTapped(1),
           child: Row(
             children: [
               Icon(Icons.history),
