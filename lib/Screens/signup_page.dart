@@ -49,28 +49,37 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 SizedBox(height: 16),
                 TextFormField(
-                  controller: _ageController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    labelText: 'Age',
-                    border: OutlineInputBorder(), // Add border to text field
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your age';
-                    }
-                    return null; // Return null if validation succeeds
-                  },
-                ),
+  controller: _ageController,
+  keyboardType: TextInputType.number,
+  decoration: InputDecoration(
+    labelText: 'Age',
+    border: OutlineInputBorder(), // Add border to text field
+  ),
+  validator: (value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your age';
+    }
+    int? age = int.tryParse(value);
+    if (age == null) {
+      return 'Please enter a valid number';
+    }
+    if (age < 8 || age > 100) {
+      return 'Age must be between 8 and 100';
+    }
+    return null; // Return null if validation succeeds
+  },
+),
+
                 SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   value: _selectedCountry.isNotEmpty ? _selectedCountry : null,
                   items: <String>[
-                    'Country 1',
-                    'Country 2',
-                    'Country 3',
-                    // Add more countries as needed
-                  ].map((String value) {
+                      'Afghanistan', 'Albania', 'Algeria', 'Argentina', 'Australia','Austria', 'Bangladesh', 'Brazil', 'Canada', 'China', 
+                      'Colombia', 'Egypt', 'Ethiopia', 'France', 'Germany', 'India', 'Indonesia', 'Iran', 'Iraq', 'Italy', 
+                      'Japan', 'Kenya', 'South Korea', 'Mexico', 'Nigeria', 'Pakistan', 'Philippines', 'Poland', 'Russia', 'Saudi Arabia', 
+                      'South Africa', 'Spain', 'Sudan', 'Tanzania', 'Thailand','Turkey', 'Uganda', 'Ukraine', 'United Kingdom', 'United States', 
+                      'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe'
+                    ].map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -120,8 +129,15 @@ class _SignUpPageState extends State<SignUpPage> {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a password';
                     }
-                    // Add custom validation for password strength
-                    // Example: ensure password meets minimum requirements
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters long';
+                      }
+                      if (value.length > 10) {
+                      return 'Password must not exceed 10 characters';
+                      }
+                      if (!RegExp(r'^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$').hasMatch(value)) {
+                      return 'Password must be alphanumeric';
+                      }
                     return null; // Return null if validation succeeds
                   },
                 ),

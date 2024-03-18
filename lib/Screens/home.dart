@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gpt/screens/about_us.dart';
 import 'package:gpt/screens/activity_bell.dart';
 import 'package:gpt/screens/header.dart';
 import 'package:gpt/screens/header2.dart';
@@ -25,7 +26,7 @@ class Home extends StatelessWidget {
             child: Padding(
               // This line was added
               padding: const EdgeInsets.only(top: 0.15), // This line was added
-              child: Header2(),
+              child: Header(),
             ),
           ),
         ),
@@ -61,7 +62,7 @@ class Home extends StatelessWidget {
                         ),
                         GestureDetector(
                           onTap: () {
-                            // Handle "About Us" hyperlink text press
+                            Get.to(() => AboutUS());
                           },
                           child: const Text(
                             'About Us',
