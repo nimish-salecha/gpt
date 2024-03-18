@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firebase_options.dart';
+import 'package:gpt/screens/dashboard.dart';
+import 'package:gpt/screens/home.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -33,7 +35,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),    //used for first function(page)
-      home: HomePage(),
+      home: Dashboard(),
       routes: {
         '/signin': (context) => SignInPage(),
         '/signup': (context) => SignUpPage(),
