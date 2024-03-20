@@ -1,3 +1,5 @@
+//used in bottom nav bar  --    in home.dart
+
 import 'package:flutter/material.dart';
 
 class AppBuilder extends StatefulWidget {
