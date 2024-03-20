@@ -9,6 +9,7 @@ import 'package:gpt/screens/RegistrationScreen.dart';
 import 'package:gpt/screens/home.dart';
 
 void main() => runApp(MaterialApp(
+      debugShowCheckedModeBanner: false,
       initialRoute: '/login',
       routes: {
         '/login': (context) => LoginScreen(),
@@ -25,7 +26,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _key = GlobalKey<FormState>();
 
-  final AuthenticationService _auth = AuthenticationService();
+  // final AuthenticationService _auth = AuthenticationService();
 
   TextEditingController _emailContoller = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
@@ -106,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: Text('Login'),
                             onPressed: () {
                               if (_key.currentState!.validate()) {
-                                signInUser();
+                                // signInUser();
                               }
                             },
                             style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.white)),
@@ -124,17 +125,17 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void signInUser() async {
-    dynamic authResult =
-        await _auth.loginUser(_emailContoller.text, _passwordController.text);
-    if (authResult == null) {
-      print('Sign in error. could not be able to login');
-    } else {
-      _emailContoller.clear();
-      _passwordController.clear();
-      Navigator.pushNamed(context, '/dashboard');
-    }
-  }
+//   void signInUser() async {
+//     dynamic authResult =
+//         await _auth.loginUser(_emailContoller.text, _passwordController.text);
+//     if (authResult == null) {
+//       print('Sign in error. could not be able to login');
+//     } else {
+//       _emailContoller.clear();
+//       _passwordController.clear();
+//       Navigator.pushNamed(context, '/dashboard');
+//     }
+//   }
 }
 
 
