@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, unused_import
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +8,6 @@ import 'package:gpt/screens/home.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:gpt/screens/homepage.dart';
 import 'package:gpt/screens/signin_page.dart';
 import 'package:gpt/screens/signup_page.dart';
 import 'screens/header.dart';
@@ -21,7 +20,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  addUser("sher", "s@gmail.com");
+  // addUser("sher", "s@gmail.com");
   runApp(MyApp());
 }
 

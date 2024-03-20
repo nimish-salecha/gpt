@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:gpt/Screens/homepage.dart';
+import 'package:gpt/Screens/home.dart';
 
 // class SignInPage extends StatelessWidget {
 //   @override
@@ -427,7 +427,7 @@ void _signInWithGoogle(BuildContext context) async {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(),
+          builder: (context) => Home(),
         ),
       );
     } else {
