@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:agora_uikit/agora_uikit.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +22,7 @@ class _VideoCallState extends State<VideoCall> {
     _client = AgoraClient(
     agoraConnectionData: AgoraConnectionData(
       appId: "8adade7c65554a28907be8616ffaba5e",
-      tempToken: "007eJxTYFg1wbSsdg1r0MyJ2ivbf6TnB9VGcvznnuTAHeI48ad1Va0Cg0ViSmJKqnmymampqUmikYWlgXlSqoWZoVlaWmJSommq6p6vqQ2BjAwWaWtZGBkgEMRnYShJLS5hYAAA9fkesg==",
+      tempToken: "007eJxTYBBhm7bW9ZH64iPrVr2Ycu3P4tx37ed/Gc1ifvhsT5fR+VknFRgsElMSU1LNk81MTU1NEo0sLA3Mk1ItzAzN0tISkxJNU1n2/E5tCGRkSHXRZ2ZkgEAQn4WhJLW4hIEBAHoRI0k=",
       channelName: widget.channelName,
     ),
     enabledPermission: [Permission.camera,Permission.microphone]

@@ -12,7 +12,12 @@
           "package_name": "com.example.gpt"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "179804533123-12j9ma06ss8ghpdrvnpgmvug6ee40baj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBWBXLAvkAao5zAHsuRd8f0jYZ21WcQSH8"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "179804533123-12j9ma06ss8ghpdrvnpgmvug6ee40baj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "179804533123-4jpchsepgrqnbvincc961jcgn7u0rm31.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.gpt"
+              }
+            }
+          ]
         }
       }
     }

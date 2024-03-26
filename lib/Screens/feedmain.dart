@@ -2,8 +2,10 @@
 
 // ignore_for_file: prefer_const_constructors
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gpt/Services/AuthenticationService.dart';
 import 'package:gpt/screens/about_us.dart';
 import 'package:gpt/screens/header.dart';
 import 'package:gpt/screens/header2.dart';
@@ -15,6 +17,13 @@ void main() {
 
 // ignore: use_key_in_widget_constructors
 class FeedMain extends StatelessWidget {
+
+  final User? user = Auth().currentUser;
+
+  Future<void> signOut() async {
+    await Auth().signOut();
+  }
+
    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
@@ -80,7 +89,7 @@ class FeedMain extends StatelessWidget {
               leading: Icon(Icons.logout_sharp),
               title: Text('Log Out'),
               onTap: () {
-                //log out and redired to welcome page
+                 signOut();
               },
             ),
           ],

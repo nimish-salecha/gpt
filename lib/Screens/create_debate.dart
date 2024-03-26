@@ -3,6 +3,7 @@
                       //   2.Host created debate
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gpt/screens/joinwithcode.dart';
 import 'package:gpt/screens/new_meeting.dart';
 void main() {
   runApp(Create_Debate());
@@ -49,7 +50,7 @@ class Create_Debate extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
-            child: OutlinedButton.icon(
+            child: ElevatedButton.icon(
               onPressed: () {
                 Get.to(JoinWithCode());
               },
@@ -73,7 +74,4 @@ class Create_Debate extends StatelessWidget {
       ),
     );
   }
-}
-
-class JoinWithCode {
 }
