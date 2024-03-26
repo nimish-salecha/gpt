@@ -124,6 +124,7 @@ class _LoginPageState extends State<LoginPage> {
           shape: StadiumBorder(),
           padding: EdgeInsets.symmetric(vertical: 16),
           backgroundColor: Colors.purple,
+          foregroundColor: Colors.black87,
         ),
         child: Text(isLogin ? 'Login' : 'Sign up', style: TextStyle(fontSize: 20)),
       ),
