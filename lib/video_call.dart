@@ -1,3 +1,76 @@
+//-------bing--(agora video call doc...)---- modify your existing code to fetch the token from your Firebase server:
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:agora_uikit/agora_uikit.dart';
+import 'package:flutter/material.dart';
+
+class VideoCall extends StatefulWidget {
+  String channelName = "";
+
+  VideoCall({required this.channelName});
+
+  @override
+  _VideoCallState createState() => _VideoCallState();
+}
+
+class _VideoCallState extends State<VideoCall> {
+  late final AgoraClient _client;
+  String firebaseUrl = ''; // Add the link to your Firebase Cloud Function here
+  int uid = 0;
+  String token = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getToken();
+  }
+
+  Future<void> getToken() async {
+    final response = await http.get(
+      Uri.parse(firebaseUrl + '/generateToken?channelName=' + widget.channelName + '&uid=' + uid.toString()),
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        token = response.body;
+        token = jsonDecode(token)['rtcToken'];
+      });
+      initAgora();
+    } else {
+      print('Failed to fetch the token');
+    }
+  }
+
+  void initAgora() async {
+    _client = AgoraClient(
+      agoraConnectionData: AgoraConnectionData(
+        appId: "8adade7c65554a28907be8616ffaba5e",
+        tempToken: token,
+        channelName: widget.channelName,
+      ),
+      enabledPermission: [Permission.camera, Permission.microphone],
+    );
+    await _client.initialize();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            AgoraVideoViewer(client: _client),
+            AgoraVideoButtons(client: _client),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+//old working code but unable to connect in single video call
+/*
 // ignore_for_file: must_be_immutable
 
 import 'package:agora_uikit/agora_uikit.dart';
@@ -53,9 +126,9 @@ class _VideoCallState extends State<VideoCall> {
     );
   }
 }
+*/
 
-
-//git code video 6--------------
+//----git code video 6--------------
 // class VideoCall extends StatefulWidget {
 //   String channelName = "test";
 
