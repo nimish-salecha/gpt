@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:gpt/firebase_options.dart';
 import 'package:gpt/Services/AuthenticationService.dart';
+import 'package:gpt/screens/dashboard.dart';
 import 'package:gpt/screens/home.dart';
 import 'package:gpt/screens/login_register_page.dart';
 
@@ -29,10 +30,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ), //used for first function(page)
       home: WidgetTree(),
-      // routes: {
+      routes: {
       //   '/signin': (context) => SignInPage(),
       //   '/signup': (context) => SignUpPage(),
-      // },
+      },
     );
   }
 }

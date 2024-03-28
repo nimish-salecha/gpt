@@ -1,9 +1,13 @@
 //          User Dash Board (profile)
-//--------V2---forrmated & (with appbar)-----------------
 // ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, prefer_final_fields, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:gpt/screens/edit_profile.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class Dashboard extends StatefulWidget {
   @override
@@ -11,7 +15,33 @@ class Dashboard extends StatefulWidget {
 }
         //used to set content switch of past and future debates
 class _DashboardState extends State<Dashboard> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   int _selectedIndex = 0;
+  String? username;
+  String? _profilePicUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFromUsers();
+  }
+
+  void fetchFromUsers() async {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      final DocumentSnapshot userData = await _firestore.collection('users').doc(user.uid).get();
+      if (userData.exists) {
+        setState(() {
+          username = userData['username'];
+          _profilePicUrl = userData['profile_pic'] ?? 'https://firebasestorage.googleapis.com/v0/b/gptt-6ae89.appspot.com/o/profile_pictures%2FProfile-PNG-File.png?alt=media&token=30c471f4-85b0-48b3-bde8-477364a329c5';
+        });
+      }
+    }
+  }
+
+
 
   static List<Widget> _widgetOptions = <Widget>[
     PastClashes(),
@@ -52,21 +82,23 @@ class _DashboardState extends State<Dashboard> {
               children: <Widget>[
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: NetworkImage(
-                      'https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_0.jpg'),
+                  backgroundImage: NetworkImage(_profilePicUrl!),   //an  exception is ocurring, but dont know how to solve 
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: dwidth * 0.08),
                   child: Column(
                     children: <Widget>[
                       Text(
-                        'Username',
+                        username ?? 'Loading...', // Show 'Loading...' until username is fetched
                         style: TextStyle(
                           fontSize: 24.0,
                         ),
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          // Get.to(() => EditProfile());
+                           Get.to(() => EditProfile(onProfileUpdated: fetchFromUsers));
+                        },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                               Colors.transparent), // Remove background color
@@ -181,119 +213,5 @@ class FutureDebates extends StatelessWidget {
 }
 
 
-// //-------------bing(unformated and with bellow button[like home, search, profil, reel of insta])----------------
-// // ignore_for_file: prefer_const_constructors, prefer_final_fields, library_private_types_in_public_api
-
-// import 'package:flutter/material.dart';
-
-// class Dashboard extends StatefulWidget {
-//   @override
-//   _DashboardState createState() => _DashboardState();
-// }
-
-// class _DashboardState extends State<Dashboard> {
-//   int _selectedIndex = 0;
-
-//   static List<Widget> _widgetOptions = <Widget>[
-//     PastClashes(),
-//     FutureDebates(),
-//   ];
-
-//   void _onItemTapped(int index) {
-//     setState(() {
-//       _selectedIndex = index;
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('User Dashboard'),
-//       ),
-//       body: Column(
-//         children: <Widget>[
-//           CircleAvatar(
-//             radius: 50,
-//             backgroundImage: NetworkImage('imageUrl'),
-//           ),
-//           Text('Username'),
-//           ElevatedButton(
-//             onPressed: () {},
-//             child: Text('Edit Profile'),
-//           ),
-//           ElevatedButton(
-//             onPressed: () {},
-//             child: Text('Share Profile'),
-//           ),
-//           Text('Participation: value'),
-//           Text('Winner: value'),
-//           _widgetOptions.elementAt(_selectedIndex),
-//         ],
-//       ),
-//       bottomNavigationBar: BottomNavigationBar(
-//         items: const <BottomNavigationBarItem>[
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.history),
-//             label: 'Past Clashes',
-//           ),
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.calendar_today),
-//             label: 'Future Debates',
-//           ),
-//         ],
-//         currentIndex: _selectedIndex,
-//         selectedItemColor: Colors.amber[800],
-//         onTap: _onItemTapped,
-//       ),
-//     );
-//   }
-// }
-
-// class PastClashes extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       child: Text('Past Clashes'),
-//     );
-//   }
-// }
-
-// class FutureDebates extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       child: Text('Future Debates'),
-//     );
-//   }
-// }
 
 
-//---------------------------------------------------------------------
-// import 'package:flutter/material.dart';
-// import 'package:gpt/screens/header.dart';
-
-// void main() {
-//   runApp(Home());
-// }
-
-// // ignore: use_key_in_widget_constructors
-// class Home extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return SafeArea(
-//       child: Scaffold(
-//         appBar:AppBar(
-//           title: Header(),
-//         ),
-        
-//         body: Text("jdwnekad"),        
-          
-//       ),
-//     );
-//   }
-// }
-
-
-// Hey i am creating a online real time video debate platform of platform using flutter, agora and firebase.(Here user can host a debate and other can participate in it in real time and there are much more featues will i will tell you when needed or you can even ask me for that)
-// create a user dashboard containing  profile picture, username, edit profil button, share profile button, 2 boxes which sholes value of participation in and another show value of Winner(number of debates won), after all this we may have 2 button one of Past clashes(past debates in which user had participated) and another button which have Future Debate (Upcoming debates for which i had registerd)  and take care of that this 2 button must not redirect to another page, content of this must be shown on the same page (for example how we see post, reel and taged in our instagaram profile page)  try to make page responsive and use flutter.
