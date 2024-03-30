@@ -1,4 +1,5 @@
 // ABOUT US
+// ignore_for_file: prefer_const_constructors, unused_field
 
 import 'package:flutter/material.dart';
 
@@ -85,21 +86,29 @@ class _AboutUsState extends State<AboutUs> with SingleTickerProviderStateMixin {
       padding: EdgeInsets.all(20),
       color: Colors.grey[200],
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'About Us',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          Row(
+            children: [
+              Text(
+                'About NexoDeb8',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(width: 10),
+              Image.network(
+                "https://img.icons8.com/plasticine/100/about.png",
+                height: 100,
+                width: 100,
+              ),
+            ],
           ),
           SizedBox(height: 10),
           Text(
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.',
+            'NexoDeb8 is a platform for hosting and participating in online debates. It provides a platform for users to engage in meaningful discussions and exchange ideas on various topics.',
             style: TextStyle(fontSize: 16),
           ),
-          SizedBox(height: 10),
-          Image.asset('assets/images/about_us_image.png'), // Placeholder image
         ],
       ),
+
     );
   }
 
@@ -115,9 +124,14 @@ class _AboutUsState extends State<AboutUs> with SingleTickerProviderStateMixin {
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10),
-          _buildFeatureItem('Feature 1', 'Lorem ipsum dolor sit amet.'),
-          _buildFeatureItem('Feature 2', 'Consectetur adipiscing elit.'),
-          _buildFeatureItem('Feature 3', 'Praesent libero.'),
+          _buildFeatureItem('User Authentication',
+              'Secure user authentication system for safe participation.'),
+          _buildFeatureItem('Debate Rooms',
+              'Create and join debate rooms on various topics.'),
+          _buildFeatureItem('Real-time Debates',
+              'Engage in real-time debates with other users.'),
+          _buildFeatureItem('User Profiles',
+              'Customizable user profiles to showcase interests and achievements.'),
           // Add more features as needed
         ],
       ),
@@ -140,16 +154,17 @@ class _AboutUsState extends State<AboutUs> with SingleTickerProviderStateMixin {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Why Use Us?',
+            'Why Use NexoDeb8?',
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10),
           Text(
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero.',
+            'NexoDeb8 provides a platform for users to express their opinions, engage in meaningful discussions, and broaden their perspectives. Whether you want to participate in debates or simply observe and learn, NexoDeb8 has something for everyone.',
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 10),
-          Image.asset('assets/images/why_use_us_image.png'), // Placeholder image
+          Image.network(
+              "https://img.icons8.com/external-xnimrodx-lineal-color-xnimrodx/64/external-debate-politics-xnimrodx-lineal-color-xnimrodx-2.png")
         ],
       ),
     );

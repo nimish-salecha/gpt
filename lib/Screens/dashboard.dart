@@ -82,7 +82,7 @@ class _DashboardState extends State<Dashboard> {
               children: <Widget>[
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: NetworkImage(_profilePicUrl!),   //an  exception is ocurring, but dont know how to solve 
+                  backgroundImage: NetworkImage(_profilePicUrl ?? 'https://firebasestorage.googleapis.com/v0/b/gptt-6ae89.appspot.com/o/profile_pictures%2FProfile-PNG-File.png?alt=media&token=30c471f4-85b0-48b3-bde8-477364a329c5'),
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: dwidth * 0.08),

@@ -6,6 +6,32 @@ import 'package:flutter/material.dart';
 // import 'package:google_fonts/google_fonts.dart';
 // // import 'package:firebase_storage/firebase_storage.dart';
 
+/* My code to fetch data from firebase to use it globally
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+FirebaseAuth _auth = FirebaseAuth.instance;
+FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+String username ='User';
+// String? profilePicUrl;
+
+Future<void> fetchUserData() async {
+  final User? user = _auth.currentUser;
+  if (user != null) {
+    final DocumentSnapshot userData =
+        await _firestore.collection('users').doc(user.uid).get();
+    if (userData.exists) {
+      username = userData['username'];
+      // profilePicUrl = userData['profile_pic'] ??
+          // 'https://firebasestorage.googleapis.com/v0/b/gptt-6ae89.appspot.com/o/profile_pictures%2FProfile-PNG-File.png?alt=media&token=30c471f4-85b0-48b3-bde8-477364a329c5';
+    }
+  }
+}
+*/
+
+
+
 // // Setting
 
 // String tokenServerUrl = '';

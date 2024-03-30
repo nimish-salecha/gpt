@@ -5,17 +5,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:get/get.dart';
 import 'package:gpt/screens/create_debate.dart';
 import 'package:gpt/screens/feedmain.dart';
 import 'package:gpt/screens/search_page.dart';
 import 'package:gpt/variables.dart';
-import 'package:gpt/screens/about_us.dart';
 import 'package:gpt/screens/activity_bell.dart';
 import 'package:gpt/screens/dashboard.dart';
-import 'package:gpt/screens/header.dart';
-import 'package:gpt/screens/header2.dart';  
-// import 'package:gpt/screens/homepage.dart';
 import 'package:gpt/screens/appbuilder.dart';
 import 'package:gpt/widgets/tab_item.dart';
 import 'package:gpt/widgets/bottomnavigation.dart';
