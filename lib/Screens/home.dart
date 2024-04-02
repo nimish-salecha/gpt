@@ -15,6 +15,8 @@ import 'package:gpt/screens/appbuilder.dart';
 import 'package:gpt/widgets/tab_item.dart';
 import 'package:gpt/widgets/bottomnavigation.dart';
 
+import '../video_call.dart';
+
 class Home extends StatefulWidget {
   // final String useruid;
   // const Home({
@@ -61,6 +63,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         size: 30,
       ),
       page: Create_Debate(),
+      // page: MyApp(),
     ),
     TabItem(
       tabName: "Alerts",
