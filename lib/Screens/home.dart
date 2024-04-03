@@ -15,8 +15,6 @@ import 'package:gpt/screens/appbuilder.dart';
 import 'package:gpt/widgets/tab_item.dart';
 import 'package:gpt/widgets/bottomnavigation.dart';
 
-import '../video_call.dart';
-
 class Home extends StatefulWidget {
   // final String useruid;
   // const Home({
