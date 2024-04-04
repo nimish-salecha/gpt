@@ -1,6 +1,8 @@
 // In app notification  -- bell click  --  activity logs
 
 import 'package:flutter/material.dart';
+import 'package:gpt/screens/predebate.dart';
+
 void main() {
   runApp(Activity());
 }
@@ -18,7 +20,7 @@ class Activity extends StatelessWidget {
           title: const Text('Activity Logs'),
         ),
 
-        body: Column(),
+        body: PreDebate(),
       ),
     );
   }

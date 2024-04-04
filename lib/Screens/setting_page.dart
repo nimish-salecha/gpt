@@ -2,6 +2,7 @@
 //used list  --  option in option -- at last option redirect to  page if needed
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gpt/screens/about_us.dart';
 
 class MainOption {
   final String title;
@@ -140,7 +141,7 @@ class Settings_tab extends StatelessWidget {
         SubOption(
           title: 'Legal(version, etc)',
           onTap: () {
-            
+            Get.to(() => AboutUs());
           },
         ),
         SubOption(

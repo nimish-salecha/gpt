@@ -1,4 +1,172 @@
 //certificate =   adc93ee71c3c4cffa4a40ae646e87c25
+// /* trying to develop ui - agora ui kit
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:agora_uikit/agora_uikit.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:crypto/crypto.dart';
+import 'package:agora_token_service/agora_token_service.dart';
+
+const appId = '8adade7c65554a28907be8616ffaba5e';
+
+void main() {
+  runApp(VideoCall(channelName: 'test'));
+}
+
+class VideoCall extends StatefulWidget {
+  final String channelName;
+
+  const VideoCall({Key? key, required this.channelName}) : super(key: key);
+
+  @override
+  State<VideoCall> createState() => _VideoCallState();
+}
+
+class _VideoCallState extends State<VideoCall> {
+  late final AgoraClient client;
+  int? uid; // UID of the local user
+  // int uid = 10;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch UID from Firebase Authentication
+    fetchUidFromFirebase();
+  }
+
+  Future<void> fetchUidFromFirebase() async {
+    // Fetch UID from Firebase Authentication
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        uid = _hashUid(user.uid); // Hash UID to get a numeric representation
+      });
+      // Initialize Agora client after fetching UID
+      initAgora();
+    } else {
+      // Handle if user is not authenticated
+      print("User is not authenticated");
+    }
+  }
+
+  int _hashUid(String uid) {
+    // Hash the UID using SHA-256 to get a numeric representation
+    var bytes = utf8.encode(uid);
+    var digest = sha256.convert(bytes);
+    return int.parse(digest.toString().substring(0, 8), radix: 16);
+  }
+
+  void initAgora() async {
+    if (uid != null) {
+      client = AgoraClient(
+        agoraConnectionData: AgoraConnectionData(
+          appId: appId,
+          channelName: widget.channelName,
+          tempToken: _generateToken(widget.channelName, uid!),
+          uid: uid,
+        ),
+        enabledPermission: [
+          Permission.camera,
+          Permission.microphone,
+        ],
+      );
+      await client.initialize();
+      // client.engine.muteLocalAudioStream(true);
+    }
+  }
+  
+  String _generateToken(String channelName, int uid) {
+        // String token = '007eJxTYBDemDVhZeQRA/YslVm7XX6LGZ8OWndxgeJ/t1P2z0Wn7HdVYLBITElMSTVPNjM1NTVJNLKwNDBPSrUwMzRLS0tMSjRN5fnEndYQyMgwV9GOiZEBAkF8FoaS1OISBgYAL9Ae2g=='; // Generate or fetch token based on channelName and uid
+     String appId = '8adade7c65554a28907be8616ffaba5e';
+    String appCertificate = 'adc93ee71c3c4cffa4a40ae646e87c25';
+    // String channelName = 'test';
+    // int uid = 123456; // Integer user ID
+    const role = RtcRole.publisher;
+    int expirationTimeInSeconds = 3600;
+
+    int currentTimestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    int privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
+
+    final token = RtcTokenBuilder.build(
+      appId: appId,
+      appCertificate: appCertificate,
+      channelName: channelName,
+      uid: uid.toString(),
+      role: role,
+      expireTimestamp: privilegeExpiredTs,
+    );
+    print("Generated Token: $token");
+    return token;
+  }
+
+  
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            AgoraVideoViewer(
+              client: client,
+              layoutType: Layout.floating,
+              // if (client.agoraConnectionData.uid == 123) // Check if the user is the host
+              
+              // enableHostControls: true, // Add this to enable host controls
+
+            ),
+            AgoraVideoButtons(
+              client: client,
+              // autoHideButtons: true,
+              // autoHideButtonTime: 5,
+              // addScreenSharing: true, 
+              disconnectButtonChild: IconButton(
+                onPressed: () async {
+                  await client!.engine.leaveChannel();
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.call_end),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+
+//   @override 
+// Widget build(BuildContext context) { 
+//   return MaterialApp( 
+//     home: Scaffold( 
+//       body: SafeArea( 
+//         child: Stack( 
+//           children: [ 
+//             AgoraVideoViewer(client: client),  
+//             AgoraVideoButtons(
+//               client: client,
+//               // disconnectButtonChild: 
+//               // disconnectButtonChild: IconButton(
+//               //         onPressed: () async {
+//               //           await client!.engine.leaveChannel();
+//               //           Navigator.pop(context);
+//               //         },
+//               //         icon: const Icon(Icons.call_end),
+//               //       ),
+//             ), 
+//           ], 
+//         ), 
+//       ), 
+//     ), 
+//   ); 
+// }
+  
+ 
+}
+// */
+
+/* completely working - but without custom ui
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:agora_uikit/agora_uikit.dart';
@@ -114,6 +282,13 @@ class _VideoCallState extends State<VideoCall> {
                 ),
               AgoraVideoButtons(
                 client: client,
+                 disconnectButtonChild: IconButton(
+                onPressed: () async {
+                  await client.engine.leaveChannel();
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.call_end),
+              ),
               ),
             ],
           ),
@@ -122,7 +297,7 @@ class _VideoCallState extends State<VideoCall> {
     );
   }
 }
-
+*/
 
 //----------------------------------------old codes--------------------------------------------------------
 

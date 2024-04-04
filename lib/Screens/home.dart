@@ -52,7 +52,8 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         CupertinoIcons.search,
         size: 30,
       ),
-      page: Search(),
+      // page: Search(),
+      page: DebateSearchPage(),
     ),
     TabItem(
       tabName: "Create",
@@ -62,7 +63,7 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       ),
       page: Create_Debate(),
       // page: MyApp(),
-    ),
+    ),  
     TabItem(
       tabName: "Alerts",
       icon: const Icon(
