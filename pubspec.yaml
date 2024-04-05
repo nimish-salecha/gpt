@@ -52,8 +52,13 @@ dependencies:
   agora_token_service: ^0.1.2
 
   crypto: ^3.0.3
-  file_picker: ^8.0.0+1
+  # file_picker: ^8.0.0+1
+  file_picker: ^6.2.1
   dotted_border: ^2.1.0
+  zego_uikit: ^2.18.7
+  zego_uikit_prebuilt_live_streaming: ^3.2.0
+  zego_uikit_signaling_plugin: ^2.7.6
+  cached_network_image: ^3.3.1
 
 dev_dependencies:
   flutter_test:

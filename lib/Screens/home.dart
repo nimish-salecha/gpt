@@ -14,6 +14,7 @@ import 'package:gpt/screens/dashboard.dart';
 import 'package:gpt/screens/appbuilder.dart';
 import 'package:gpt/widgets/tab_item.dart';
 import 'package:gpt/widgets/bottomnavigation.dart';
+import 'package:gpt/zego_main.dart';
 
 class Home extends StatefulWidget {
   // final String useruid;
@@ -52,8 +53,8 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
         CupertinoIcons.search,
         size: 30,
       ),
-      // page: Search(),
-      page: DebateSearchPage(),
+      page: Zego_main(navigatorKey: GlobalKey<NavigatorState>(),),
+      // page: DebateSearchPage(),
     ),
     TabItem(
       tabName: "Create",

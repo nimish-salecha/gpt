@@ -24,11 +24,11 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void initState() {
-    super.initState();
     fetchFromUsers();
+    super.initState();
   }
 
-  void fetchFromUsers() async {
+  Future<void> fetchFromUsers() async {
     final User? user = _auth.currentUser;
     if (user != null) {
       final DocumentSnapshot userData = await _firestore.collection('users').doc(user.uid).get();
@@ -58,139 +58,155 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     final dwidth = MediaQuery.of(context).size.width;
     final dheight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue[400],
-        title: Text('User Dashboard'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.share),
-            onPressed: () {
-              Share.share("User Profile Link");
-            }, //user profil link
-          ),
-        ],
-      ),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(
-                top: dheight * 0.01,
-                left: dwidth * 0.02,
-                bottom: dheight * 0.03),
-            child: Row(
-              children: <Widget>[
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: NetworkImage(_profilePicUrl ?? 'https://firebasestorage.googleapis.com/v0/b/gptt-6ae89.appspot.com/o/profile_pictures%2FProfile-PNG-File.png?alt=media&token=30c471f4-85b0-48b3-bde8-477364a329c5'),
+    // return FutureBuilder(
+    //   future: fetchFromUsers(),
+    //   builder: (BuildContext context, AsyncSnapshot<void> snapshot)
+    //   {
+    //     if (snapshot.connectionState == ConnectionState.waiting) {
+    //       // Display a loading indicator while waiting for the future to complete
+    //       return CircularProgressIndicator();
+    //     } else if (snapshot.hasError) {
+    //       // Handle any errors that occurred during the future execution
+    //       return Text('Error: ${snapshot.error}');
+    //     } else 
+    //     {
+          // Once the future completes successfully, build the UI
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.blue[400],
+              title: Text('User Dashboard'),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.share),
+                  onPressed: () {
+                    Share.share("User Profile Link");
+                  }, //user profil link
                 ),
+              ],
+            ),
+            body: Column(
+              children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.only(left: dwidth * 0.08),
-                  child: Column(
+                  padding: EdgeInsets.only(
+                      top: dheight * 0.01,
+                      left: dwidth * 0.02,
+                      bottom: dheight * 0.03),
+                  child: Row(
                     children: <Widget>[
-                      Text(
-                        username ?? 'Loading...', // Show 'Loading...' until username is fetched
-                        style: TextStyle(
-                          fontSize: 24.0,
-                        ),
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundImage: NetworkImage(_profilePicUrl ?? 'https://firebasestorage.googleapis.com/v0/b/gptt-6ae89.appspot.com/o/profile_pictures%2FProfile-PNG-File.png?alt=media&token=30c471f4-85b0-48b3-bde8-477364a329c5'),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          // Get.to(() => EditProfile());
-                           Get.to(() => EditProfile(onProfileUpdated: fetchFromUsers));
-                        },
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              Colors.transparent), // Remove background color
-                          overlayColor: MaterialStateProperty.all<Color>(
-                              Colors.transparent), // Remove overlay color
+                      Padding(
+                        padding: EdgeInsets.only(left: dwidth * 0.08),
+                        child: Column(
+                          children: <Widget>[
+                            Text(
+                              username ?? 'Loading...', // Show 'Loading...' until username is fetched
+                              style: TextStyle(
+                                fontSize: 24.0,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                // Get.to(() => EditProfile());
+                                Get.to(() => EditProfile(onProfileUpdated: fetchFromUsers));
+                              },
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all<Color>(
+                                    Colors.transparent), // Remove background color
+                                overlayColor: MaterialStateProperty.all<Color>(
+                                    Colors.transparent), // Remove overlay color
+                              ),
+                              child: Text('Edit Profile'),
+                            ),
+                          ],
                         ),
-                        child: Text('Edit Profile'),
                       ),
                     ],
                   ),
                 ),
+          
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    SizedBox(width: dwidth*0.05,),
+                    Container(
+                      width: dwidth*0.4 ,
+                      // padding: EdgeInsets.all(6.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.blueAccent),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      child: Column(
+                        children: [
+                          Text("value",
+                            style: TextStyle(
+                                fontSize: 20.0,
+                              ),
+                          ),
+                          Text('Participated'),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: dwidth*0.4 ,
+                      // padding: EdgeInsets.all(6.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.blueAccent),
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                      child: Column(
+                        children: [
+                          Text("value",
+                            style: TextStyle(
+                                fontSize: 20.0,
+                              ),
+                          ),
+                          Text('Winned'),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: dwidth*0.05,),
+                  ],
+                ),
+                  SizedBox(height: dheight*0.02,),
+                Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () => _onItemTapped(0),
+                child: Row(
+                  children: [
+                    Icon(Icons.history),
+                    SizedBox(width: 6), // Add some spacing between icon and text
+                    Text('Past Clashes'),
+                  ],
+                ),
+              ),
+              SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () => _onItemTapped(1),
+                child: Row(
+                  children: [
+                    Icon(Icons.history),
+                    SizedBox(width: 6), // Add some spacing between icon and text
+                    Text('Future Clashes'),
+                  ],
+                ),
+              ),
               ],
             ),
-          ),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              SizedBox(width: dwidth*0.05,),
-              Container(
-                width: dwidth*0.4 ,
-                // padding: EdgeInsets.all(6.0),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blueAccent),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: Column(
-                  children: [
-                    Text("value",
-                      style: TextStyle(
-                          fontSize: 20.0,
-                        ),
-                    ),
-                    Text('Participated'),
-                  ],
-                ),
-              ),
-              Container(
-                width: dwidth*0.4 ,
-                // padding: EdgeInsets.all(6.0),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blueAccent),
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                child: Column(
-                  children: [
-                    Text("value",
-                      style: TextStyle(
-                          fontSize: 20.0,
-                        ),
-                    ),
-                    Text('Winned'),
-                  ],
-                ),
-              ),
-              SizedBox(width: dwidth*0.05,),
-            ],
-          ),
-            SizedBox(height: dheight*0.02,),
-           Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        ElevatedButton(
-          onPressed: () => _onItemTapped(0),
-          child: Row(
-            children: [
-              Icon(Icons.history),
-              SizedBox(width: 6), // Add some spacing between icon and text
-              Text('Past Clashes'),
-            ],
-          ),
-        ),
-        SizedBox(width: 10),
-        ElevatedButton(
-          onPressed: () => _onItemTapped(1),
-          child: Row(
-            children: [
-              Icon(Icons.history),
-              SizedBox(width: 6), // Add some spacing between icon and text
-              Text('Future Clashes'),
-            ],
-          ),
-        ),
-        ],
-      ),
-      
-          SizedBox(height: dheight*0.02,),
-          //ans of floating futton
-          _widgetOptions.elementAt(_selectedIndex),
-        ],
-      ),
-    );
+            
+                SizedBox(height: dheight*0.02,),
+                //ans of floating futton
+                _widgetOptions.elementAt(_selectedIndex),
+              ],
+            ),
+          );
+    //     }
+      // }
+    // );
   }
 }
 
