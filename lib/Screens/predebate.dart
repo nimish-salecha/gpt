@@ -38,8 +38,9 @@ class _PreDebateState extends State<PreDebate> {
 
    @override
   void initState() {
+    fetchUser();
     var uuid = Uuid();
-    _meetingCode = uuid.v1().substring(0, 8);
+    _meetingCode = uuid.v1().substring(0, 5);
     super.initState();
   }
 

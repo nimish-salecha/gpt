@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 
 class DeleteAccountPage extends StatefulWidget {
   @override
@@ -43,6 +44,7 @@ class _DeleteAccountPageState extends State<DeleteAccountPage> {
         SnackBar(
           content: Text('Account deleted successfully.'),
         ),
+        
       );
     } catch (e) {
       // Error deleting account

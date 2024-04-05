@@ -1,6 +1,324 @@
 // Main Home Page --  1st feed page
+//v3 with single debate card
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
+import 'package:gpt/Services/AuthenticationService.dart';
+import 'package:gpt/screens/about_us.dart';
+import 'package:gpt/screens/setting_page.dart';
+import 'package:gpt/screens/debate_details.dart'; // Import the debate details page
 
-//V2
+class FeedMain extends StatefulWidget {
+  _FeedMain createState() => _FeedMain();
+}
+
+class _FeedMain extends State<FeedMain> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String? selectedTopic;
+  String? username;
+
+  void fetchDebatesByTopic(String topic) {
+    setState(() {
+      selectedTopic = topic;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  void fetchUserData() async {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      final DocumentSnapshot userData =
+          await _firestore.collection('users').doc(user.uid).get();
+      if (userData.exists) {
+        setState(() {
+          username = userData['username'];
+        });
+      }
+    }
+  }
+
+  Future<void> signOut() async {
+    await Auth().signOut();
+  }
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  Widget build(BuildContext context) {
+    final dwidth = MediaQuery.of(context).size.width;
+    final dheight = MediaQuery.of(context).size.height;
+    return SafeArea(
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Image.asset(
+            'assets/nexo_logo.png',
+            height: dheight * 0.5,
+            width: dwidth * 0.5,
+          ),
+        ),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 10, 75, 129),
+                ),
+                child: Text(
+                  'Hii, $username' ?? 'Hii, User',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.person),
+                title: Text('About Us'),
+                onTap: () {
+                  Get.to(() => AboutUs());
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text('Settings'),
+                onTap: () {
+                  Get.to(() => Settings_tab());
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.logout_sharp),
+                title: Text('Log Out'),
+                onTap: () {
+                  signOut();
+                },
+              ),
+            ],
+          ),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Trending Debates',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Container(
+                  height: 200,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: _firestore.collection('debates').snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      final debates = snapshot.data!.docs;
+                      // Limit the number of cards shown in the trending debates column to 4
+                      final trendingDebates = debates.take(4).toList();
+                      return ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: trendingDebates.length,
+                        itemBuilder: (context, index) {
+                          final debate = trendingDebates[index];
+                          final debateTopic = debate['title'];
+                          final debateHost = _auth.currentUser?.displayName ??
+                              'Unknown'; // Assuming displayName is the host
+                          final debateId = debate.id; // Fetching debate ID
+
+                          return _buildTrendingDebateCard(
+                              debateTopic, debateHost, debateId);
+                        },
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Featured Topics',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                // Featured topics
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildTopicChip('Politics'),
+                      _buildTopicChip('Religious'),
+                      _buildTopicChip('Science and Technology'),
+                      _buildTopicChip('Social Issues'),
+                      _buildTopicChip('Entertainment'),
+                      _buildTopicChip('Environment'),
+                      _buildTopicChip('Education'),
+                      _buildTopicChip('Health and Wellness'),
+                      _buildTopicChip('Sports'),
+                      _buildTopicChip('Business and Economy'),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                // Debates by selected topic
+                if (selectedTopic != null) ...[
+                  Text(
+                    'Debates on $selectedTopic',
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10),
+                  // StreamBuilder to fetch and display debates based on selected topic
+                  StreamBuilder<QuerySnapshot>(
+                    stream: _firestore
+                        .collection('debates')
+                        .where('category', isEqualTo: selectedTopic)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final debates = snapshot.data!.docs;
+                        return Column(
+                          children: debates.map<Widget>((debate) {
+                            // Build debate card widget here
+                            return Column(
+                              children: [
+                                _buildDebateCard(
+                                    debate['title'], debate['userId']),
+                                SizedBox(height: 20),
+                              ],
+                            );
+                          }).toList(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        return CircularProgressIndicator();
+                      }
+                    },
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTrendingDebateCard(String topic, String host, String debateId) {
+    return InkWell(
+      onTap: () {
+        Get.to(() => DebateDetailsPage(debateId: debateId));
+        // Get.to(() => AboutUs());
+        // print("fdfd");
+      },
+      child: Card(
+        elevation: 3,
+        // color: Color.fromARGB(255, 251, 202, 249),
+        color: Color.fromARGB(255, 252, 209, 228),
+
+        margin: EdgeInsets.only(right: 10),
+        child: Container(
+          width: 200, // Set the width of the card
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  topic,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 5),
+                Text('Host: $host'),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopicChip(String topic) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.0), // Add horizontal padding
+      child: GestureDetector(
+        onTap: () {
+          fetchDebatesByTopic(topic);
+        },
+        child: Chip(
+          label: Text(topic),
+          backgroundColor: Colors.blue,
+          labelStyle: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+}
+
+Widget _buildDebateCard(String topic, String host) {
+  return Card(
+    elevation: 3,
+    color: Color.fromARGB(255, 255, 177, 211),
+    margin: EdgeInsets.only(right: 10),
+    child: Padding(
+      padding: EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            topic,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 5),
+          FutureBuilder(
+            future: _getUserName(host),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Text('Host: Loading...');
+              } else {
+                return Text('Host: ${snapshot.data}');
+              }
+            },
+          ),
+          SizedBox(height: 5),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () {},
+                child: Text('Join'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Future<String> _getUserName(String userId) async {
+  try {
+    User? user = await FirebaseAuth.instance.userChanges().first;
+    if (user != null) {
+      return user.displayName ?? 'Unknown';
+    } else {
+      return 'Unknown';
+    }
+  } catch (e) {
+    print('Error fetching username: $e');
+    return 'Unknown';
+  }
+}
+
+/*//V2 -- before hiya added Debate_Details.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -264,7 +582,7 @@ class _FeedMain extends State<FeedMain> {
     }
   }
 }
-
+*/
 
 /* V1
 // ignore_for_file: prefer_const_constructors

@@ -17,6 +17,12 @@ class _JoinWithCodeState extends State<JoinWithCode> {
   TextEditingController _controller = TextEditingController();
 
   @override
+  void initState() {
+    fetchUser();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final dwidth = MediaQuery.of(context).size.width;
     final dheight = MediaQuery.of(context).size.height;
@@ -55,7 +61,7 @@ class _JoinWithCodeState extends State<JoinWithCode> {
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: "Example : abc-efg-dhi"),
+                        hintText: "Example : "),
                   ),
                 ),
               ),

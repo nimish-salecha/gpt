@@ -1,3 +1,4 @@
+//width over in containers
 // ABOUT US
 // ignore_for_file: prefer_const_constructors, unused_field
 
@@ -82,33 +83,35 @@ class _AboutUsState extends State<AboutUs> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildAboutUsSection() {
-    return Container(
-      padding: EdgeInsets.all(20),
-      color: Colors.grey[200],
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Text(
-                'About NexoDeb8',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(width: 10),
-              Image.network(
-                "https://img.icons8.com/plasticine/100/about.png",
-                height: 100,
-                width: 100,
-              ),
-            ],
-          ),
-          SizedBox(height: 10),
-          Text(
-            'NexoDeb8 is a platform for hosting and participating in online debates. It provides a platform for users to engage in meaningful discussions and exchange ideas on various topics.',
-            style: TextStyle(fontSize: 16),
-          ),
-        ],
+    return SingleChildScrollView(   //added new
+      child: Container(
+        padding: EdgeInsets.all(20),
+        color: Colors.grey[200],
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Text(
+                  'About NexoDeb8',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 10),
+                Image.network(
+                  "https://img.icons8.com/plasticine/100/about.png",
+                  height: 100,
+                  width: 100,
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            Text(
+              'NexoDeb8 is a platform for hosting and participating in online debates. It provides a platform for users to engage in meaningful discussions and exchange ideas on various topics.',
+              style: TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
+      
       ),
-
     );
   }
 
