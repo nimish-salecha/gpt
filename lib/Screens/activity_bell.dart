@@ -20,7 +20,7 @@ class Activity extends StatelessWidget {
           title: const Text('Activity Logs'),
         ),
 
-        body: PreDebate(),
+        body: Column(),
       ),
     );
   }

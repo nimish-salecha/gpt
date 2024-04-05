@@ -126,8 +126,8 @@ class _DashboardState extends State<Dashboard> {
                     ],
                   ),
                 ),
-          
-                Row(
+          //will show after analytics
+             /*   Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     SizedBox(width: dwidth*0.05,),
@@ -171,6 +171,7 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
                   SizedBox(height: dheight*0.02,),
+                */
                 Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[

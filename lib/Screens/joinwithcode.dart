@@ -2,9 +2,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gpt/screens/zego/live_page.dart';
 import 'package:gpt/video_call.dart';
+import 'package:zego_uikit_prebuilt_live_streaming/zego_uikit_prebuilt_live_streaming.dart';
+import 'package:gpt/screens/zego/constants.dart';
 
-class JoinWithCode extends StatelessWidget {
+
+class JoinWithCode extends StatefulWidget {
+  @override
+  State<JoinWithCode> createState() => _JoinWithCodeState();
+}
+
+class _JoinWithCodeState extends State<JoinWithCode> {
   TextEditingController _controller = TextEditingController();
 
   @override
@@ -52,8 +61,20 @@ class JoinWithCode extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Get.to(() => VideoCall(channelName: _controller.text.trim()));
-                  // Get.to(() => VideoCall());
+                  // Get.to(() => VideoCall(channelName: _controller.text.trim()));
+                   if (ZegoUIKitPrebuiltLiveStreamingController()
+                    .minimize
+                    .isMinimizing) {
+                  /// when the application is minimized (in a minimized state),
+                  /// disable button clicks to prevent multiple PrebuiltLiveStreaming components from being created.
+                  return;
+                }
+
+                jumpToLivePage(
+                  context,
+                  liveID: _controller.text.trim(),
+                  isHost: false,
+                );
                 },
                 style: ElevatedButton.styleFrom(
                   fixedSize: Size(dwidth*0.4, dheight*0.08),
@@ -70,4 +91,19 @@ class JoinWithCode extends StatelessWidget {
       ),
     );
   }
+
+    void jumpToLivePage(BuildContext context,
+      {required String liveID, required bool isHost}) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LivePage(
+          liveID: liveID,
+          isHost: isHost,
+          localUserID: localUserID,
+        ),
+      ),
+    );
+  }
 }
+

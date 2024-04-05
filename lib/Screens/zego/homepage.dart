@@ -1,3 +1,6 @@
+//homepage layout of zego kit 
+// but wwill not use it in   future replace with create_debate
+
 // Dart imports:
 import 'dart:math';
 

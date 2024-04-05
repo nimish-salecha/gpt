@@ -1,3 +1,6 @@
+//add sheduled debates option  
+//also add in past and future debate
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gpt/screens/joinwithcode.dart';
@@ -38,7 +41,7 @@ class Create_Debate extends StatelessWidget {
                     );
                   },
                   icon: Icon(Icons.add),
-                  label: Text("Host Debate"),
+                  label: Text("Schedule Debate"),
                   style: ElevatedButton.styleFrom(
                     fixedSize: Size(dwidth * 0.6, dheight * 0.1),
                     backgroundColor: Colors.indigo,
@@ -60,7 +63,7 @@ class Create_Debate extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: () {
                     Get.to(JoinWithCode());
-                  },
+                  },  
                   icon: Icon(Icons.margin),
                   label: Text("Join with a code"),
                   style: OutlinedButton.styleFrom(
