@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:gpt/Services/AuthenticationService.dart';
+import 'package:gpt/screens/setting_pages/forget_password.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -224,6 +227,13 @@ print(querySnapshot.docs[0].data()['email']);
         ),
         child: Text(isLogin ? 'Login' : 'Sign up', style: TextStyle(fontSize: 20)),
       ),
+      // "Forgot Password?" button
+      TextButton(
+        onPressed: () {
+          Get.to(() => ForgotPassword());
+        },
+        child: Text("Forgot Password?"),
+      ),
     ],
   );
 }
@@ -237,6 +247,11 @@ print(querySnapshot.docs[0].data()['email']);
       onPressed: () {
         setState(() {
           isLogin = !isLogin;
+              //clearing all textbox when switch between login or register
+          // _controllerEmailOrUsername.clear();
+          _controllerPassword.clear();
+          _controllerEmail.clear();
+          _usernameController.clear();
         });
       },
       child: Text(isLogin ? 'Register instead' : 'Login instead'),
@@ -265,114 +280,3 @@ print(querySnapshot.docs[0].data()['email']);
     );
   }
 }
-
-
-//original main -- working -- without front end design
-/*
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // your proj name in firebase
-import 'package:gpt/Services/AuthenticationService.dart';
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
-
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  String? errorMessage = '';
-  bool isLogin = true;
-
-  final TextEditingController _controllerEmail = TextEditingController();
-  final TextEditingController _controllerPassword = TextEditingController();
-
-  Future<void> signInWithEmailAndPassword() async {
-    try {
-      await Auth().signInWithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
-      );
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-      });
-    }
-  }
-
-  Future<void> createUserWithEmailAndPassword() async {
-    try {
-      await Auth().createUserWithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
-      );
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        errorMessage = e.message;
-      });
-    }
-  }
-
-  Widget _title() {
-    return const Text('Firebase Auth');
-  }
-
-  Widget _entryField(
-    String title,
-    TextEditingController controller,
-  ) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: title,
-      ),
-    );
-  }
-
-  Widget _errorMessage() {
-    return Text(errorMessage == '' ? '' : 'Humm ? $errorMessage');
-  }
-
-  Widget _submitButton() {
-    return OutlinedButton(
-      onPressed:
-          isLogin ? signInWithEmailAndPassword : createUserWithEmailAndPassword,
-      child: Text(isLogin ? 'Login' : 'Register'),
-    );
-  }
-
-  Widget _loginOrRegisterButton() {
-    return TextButton(
-      onPressed: () {
-        setState(() {
-          isLogin = !isLogin;
-        });
-      },
-      child: Text(isLogin ? 'Register instead' : 'Login instead'),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: _title()),
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            _entryField('email', _controllerEmail),
-            _entryField('password', _controllerPassword),
-            _errorMessage(),
-            _submitButton(),
-            _loginOrRegisterButton(),
-          ],
-        ),
-      ),
-    );
-  }
-}
-*/

@@ -1,3 +1,4 @@
+//same code as of account delete
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

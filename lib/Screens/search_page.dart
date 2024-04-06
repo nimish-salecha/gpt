@@ -1,5 +1,5 @@
 // //Search debates and add filter and sort
-
+// Search not working properly
 //v3
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

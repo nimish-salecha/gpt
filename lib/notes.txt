@@ -1,0 +1,67 @@
+Note: designigpod/cocapod/xib file [cred ui ux]
+        tab bar or only meny bar (improve ui/ux)
+
+>>>create responsive to mobile and web
+>>>all things must work on web+ (ios)
+>>>ui and layouting of whole project
+
+>hiya search bar  (not working properly)
+    add serbox
+
+>Predebate
+    cancle and modify debate 
+    user can join before and after shedule time
+    Co-host list at sheduling (So they dont need code to join)
+    (Block user)
+    reminder for debates --in app /mail/ phone top
+    Thumbnail upload
+        (Show on all debate card and debate_detail page)
+    public & private (reflect in other locations)
+
+>Feedmain
+    Trending debate algo
+    
+>Login  
+    ]Forget Password
+    ]cleare textfeitd when switch b/w login <--> register
+    confirm Password feild at registration
+
+    (error msg)
+    (can login with uname)
+
+>notifications
+
+>Edit_profile 
+    Gender DropDown menu
+    ]when saved automaticall get back to dashboard
+
+>Settings
+    ]in change pass - confirm old and new pass
+    ]add forget Password
+    Disabled account can be enabled
+    After deleting account Navigate directly to loging page (no go back back)
+    
+------after all this develop algo for 
+                                    Summary generation
+                                    Win/lost debate
+                                    in video call (against at one size or with red boder and other with green)
+                                    Speech delay(so cant speak absuive)
+                                    stop spam chat
+                                    one can create clan or club
+
+
+============Features to do at end=====================
+>Settings
+    Email notifications Settings change option
+    Theam change option
+
+>Search_page
+    Add filter and Sort option
+
+>Edit_profile 
+    Age can't be changed later
+
+>Generate links for user_profile and debate(can bbe done for Single_debate_detail_page) 
+>Recommended Debates (can change intrest and will show Recommendedaccording to intrest)
+>Debate Like this in Single_Debate_Detailpage
+    

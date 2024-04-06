@@ -1,18 +1,25 @@
 //add image picker for bg image, agg public/private option,
 //updated
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:typed_data';
-import 'package:intl/intl.dart';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:image_picker/image_picker.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:gpt/widgets/custtom_button.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
 import 'package:zego_uikit_prebuilt_live_streaming/zego_uikit_prebuilt_live_streaming.dart';
+
+import 'package:intl/intl.dart';
+import 'package:gpt/widgets/custtom_button.dart';
 import 'package:gpt/screens/zego/live_page.dart';
 import 'package:gpt/screens/zego/constants.dart';
 
@@ -31,10 +38,12 @@ class _PreDebateState extends State<PreDebate> {
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  File? _imageFile;
+  String? _thumbnailUrl;
   String _meetingCode = "abcdfgqw";
-  Uint8List? image;
   DateTime? _selectedDateTime;
   String? _selectedCategory; // Selected category
+  String? _selectedPrivacy;   //for public & private
 
    @override
   void initState() {
@@ -66,6 +75,7 @@ class _PreDebateState extends State<PreDebate> {
         _selectedDateTime == null ||
         _descriptionController.text.isEmpty ||
         _selectedCategory == null ||
+        _selectedPrivacy == null ||
         _meetingCode == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please fill in all details')),
@@ -76,9 +86,10 @@ class _PreDebateState extends State<PreDebate> {
     try {
       // Get the current user
       final user = FirebaseAuth.instance.currentUser;
+      final defaultProfilePicURL = 'https://firebasestorage.googleapis.com/v0/b/gptt-6ae89.appspot.com/o/profile_pictures%2FProfile-PNG-File.png?alt=media&token=30c471f4-85b0-48b3-bde8-477364a329c5';
       if (user != null) {
         // Upload thumbnail image to Firebase Storage
-        final thumbnailUrl = await _uploadThumbnail();
+        // final _thumbnailUrl = await _uploadThumbnail();
 
         // Add the debate details to Firestore
         await FirebaseFirestore.instance.collection('debates').add({
@@ -87,8 +98,9 @@ class _PreDebateState extends State<PreDebate> {
           'age': int.tryParse(_ageController.text.trim()) ?? 0,
           'scheduledDateTime': _selectedDateTime,
           'description': _descriptionController.text.trim(),
-          'thumbnailUrl': thumbnailUrl,
+          '_thumbnailUrl': _thumbnailUrl,
           'category': _selectedCategory, // Add category field
+          'privacy': _selectedPrivacy,
           'joincode': _meetingCode,
           // Add other fields as needed
         });
@@ -110,9 +122,11 @@ class _PreDebateState extends State<PreDebate> {
         _dateController.clear();
         _descriptionController.clear();
         setState(() {
-          image = null;
+          _imageFile = null;
+          _thumbnailUrl = defaultProfilePicURL;
           _selectedDateTime = null;
           _selectedCategory = null; // Clear selected category
+          _selectedPrivacy = null;
         });
       }
     } catch (e) {
@@ -124,23 +138,48 @@ class _PreDebateState extends State<PreDebate> {
     }
   }
 //image
-  Future<String> _uploadThumbnail() async {
-    try {
-      if (image != null) {
-        // Upload image to Firebase Storage
-        final fileName = DateTime.now().toString();
-        final ref = FirebaseStorage.instance.ref().child(fileName);
-        final uploadTask = ref.putData(image!);
-        final taskSnapshot = await uploadTask.whenComplete(() => {});
-        final downloadUrl = await taskSnapshot.ref.getDownloadURL();
-        return downloadUrl;
-      }
-      return '';
-    } catch (e) {
-      print('Error uploading thumbnail: $e');
-      throw Exception('Failed to upload thumbnail');
-    }
+
+// Define _imageFile as Uint8List
+Uint8List? _imageBytes;
+
+// Read image file as bytes
+Future<void> loadImage() async {
+  if (_imageFile != null) {
+    _imageBytes = await _imageFile!.readAsBytes();
   }
+}
+Future<void> _uploadImage() async {
+  try {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      final file = File(pickedFile.path);
+      setState(() {
+        _imageFile = file;
+      });
+
+      final storageRef = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('debate_thumnail')
+          .child('${FirebaseAuth.instance.currentUser!.uid}.jpg');
+
+      await storageRef.putFile(file);
+
+      String downloadURL = await storageRef.getDownloadURL();
+
+      FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
+        'debate_thumnail': downloadURL,
+      });
+
+      setState(() {
+        _thumbnailUrl = downloadURL;
+      });
+    }
+  } catch (e) {
+    print('Error uploading image: $e');
+  }
+}
+
 
   Future<void> _selectDateTime(BuildContext context) async {
     final pickedDateTime = await showDatePicker(
@@ -171,7 +210,252 @@ class _PreDebateState extends State<PreDebate> {
     }
   }
 //perdebate page layout
-  @override
+@override
+Widget build(BuildContext context) {
+  return SafeArea(
+    child: SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    _uploadImage();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 22.0,
+                      vertical: 20.0,
+                    ),
+                    child: _imageFile != null
+                        ? SizedBox(
+                            height: 300,
+                            child: Image.file(
+                              _imageFile!,
+                              fit: BoxFit.cover, // Adjust this based on your requirement
+                            ),
+                          )
+                        : DottedBorder(
+                            borderType: BorderType.RRect,
+                            radius: const Radius.circular(10),
+                            dashPattern: const [10, 4],
+                            strokeCap: StrokeCap.round,
+                            color: buttonColor,
+                            child: Container(
+                              width: double.infinity,
+                              height: 150,
+                              decoration: BoxDecoration(
+                                color: buttonColor.withOpacity(.05),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.folder_open,
+                                    color: Colors.blue,
+                                    size: 40,
+                                  ),
+                                  const SizedBox(height: 15),
+                                  Text(
+                                    'Select your thumbnail',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.grey.shade400,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Age',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: TextField(
+                        controller: _ageController,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter age',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Debate Title',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: TextField(
+                        controller: _titleController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter title',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Date and Time to be Scheduled On',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
+                                child: TextField(
+                                  controller: _dateController,
+                                  readOnly: true,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    hintText: 'Select date and time',
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: IconButton(
+                            onPressed: () => _selectDateTime(context),
+                            icon: const Icon(Icons.calendar_today),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Debate Description',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: TextField(
+                        controller: _descriptionController,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Enter description',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Category',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    DropdownButtonFormField(
+                      value: _selectedCategory,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedCategory = value as String?;
+                        });
+                      },
+                      items: categories.map((category) {
+                        return DropdownMenuItem(
+                          value: category,
+                          child: Text(category),
+                        );
+                      }).toList(),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Select category',
+                      ),
+                    ),
+                    Row(
+                        children: [
+                          Text('Privacy: '),
+                          Radio<String>(
+                            value: 'Public',
+                            groupValue: _selectedPrivacy,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedPrivacy = value;
+                              });
+                            },
+                          ),
+                          Text('Public'),
+                          Radio<String>(
+                            value: 'Private',
+                            groupValue: _selectedPrivacy,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedPrivacy = value;
+                              });
+                            },
+                          ),
+                          Text('Private'),
+                        ],
+                      ),
+                  ],
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                bottom: 10,
+              ),
+              child: Column(
+                children: [
+                  CustomButton(
+                    text: 'Submit',
+                    onTap: _submitData,
+                  ),
+                  const SizedBox(height: 10),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ScheduledDebatesPage()),
+                      );
+                    },
+                    child: const Text(
+                      'View Scheduled Debates',
+                      style: TextStyle(color: Colors.blue),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    ),
+  );
+}
+//old but thumbnail not working and dont have public & privacy option
+ /* @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: SingleChildScrollView(
@@ -184,25 +468,36 @@ class _PreDebateState extends State<PreDebate> {
                 children: [
                   GestureDetector(
                     onTap: () async {
-                      final pickedImage = await FilePicker.platform.pickFiles(
-                        type: FileType.image,
-                      );
-                      if (pickedImage != null) {
-                        setState(() {
-                          image = pickedImage.files.single.bytes;
-                        });
-                      }
+                      _uploadImage();
+                      // if (pickedImage != null) {
+                      //   setState(() {
+                      //     image = pickedImage.files.single.bytes;
+                      //   });
+                      // }
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 22.0,
                         vertical: 20.0,
                       ),
-                      child: image != null
+                      child: _imageFile != null
                           ? SizedBox(
                               height: 300,
-                              child: Image.memory(image!),
-                            )
+                              child: _imageBytes != null
+                                  ? Image.memory(
+                                      _imageBytes!,
+                                      fit: BoxFit.cover, // Adjust this based on your requirement
+                                    )
+                                  : SizedBox(
+                                      height: 100, 
+                                      width: 100, 
+                                      child: CupertinoActivityIndicator(),
+                                    )
+                            ) 
+                          // SizedBox(
+                          //     height: 300,
+                          //     child: Image.memory(_imageFile),
+                          //   )
                           : DottedBorder(
                               borderType: BorderType.RRect,
                               radius: const Radius.circular(10),
@@ -393,7 +688,7 @@ class _PreDebateState extends State<PreDebate> {
         ),
       ),
     );
-  }
+  }*/
 }
 
 class ScheduledDebatesPage extends StatelessWidget {
@@ -515,6 +810,7 @@ class _DebateCardState extends State<DebateCard> {
                 Text('Description: ${widget.debate['description']}'),
                 Text('Category: ${widget.debate['category'] ?? 'No category'}'),
                 Text('Meeting Code : ${widget.debate['joincode']}'),
+                Text('Privacy: ${widget.debate['privacy'] ?? 'No privacy'}'),
                 // Add more details as needed
 
               ],
