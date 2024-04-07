@@ -72,7 +72,7 @@ class ForgotPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightBlueAccent,
+      backgroundColor: Color.fromARGB(255, 32, 32, 70),
       body: Form(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 30.0),
@@ -80,37 +80,56 @@ class ForgotPassword extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Email Your Email',
-                style: TextStyle(fontSize: 30, color: Colors.white),
+                'Mail your e-mail ♡',
+                style: TextStyle(
+                  fontSize: 30,
+                  color: Color.fromARGB(255, 254, 99, 61),
+                  fontWeight: FontWeight.bold, // Make text bold
+                  fontFamily: 'YourFontFamily', // Change font style (replace 'YourFontFamily' with your desired font family)
+                ),
               ),
               TextFormField(
                 controller: _emailController,
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Color.fromARGB(255, 254, 99, 61)),
                 decoration: InputDecoration(
                   labelText: 'Email',
                   icon: Icon(
                     Icons.mail,
-                    color: Colors.white,
+                    color: Color.fromARGB(255, 254, 99, 61),
                   ),
-                  errorStyle: TextStyle(color: Colors.white),
-                  labelStyle: TextStyle(color: Colors.white),
-                  hintStyle: TextStyle(color: Colors.white),
+                  errorStyle: TextStyle(color: Color.fromARGB(255, 254, 99, 61)),
+                  labelStyle: TextStyle(color: Color.fromARGB(255, 254, 99, 61)),
+                  hintStyle: TextStyle(color: Color.fromARGB(255, 254, 99, 61)),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
+                    borderSide: BorderSide(color: Color.fromARGB(255, 254, 99, 61)),
                   ),
                   enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
+                    borderSide: BorderSide(color: Color.fromARGB(255, 254, 99, 61)),
                   ),
                   errorBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white),
+                    borderSide: BorderSide(color: Color.fromARGB(255, 254, 99, 61)),
                   ),
                 ),
               ),
               SizedBox(height: 20),
+              // ElevatedButton(
+              //   onPressed: () => _resetPassword(context),
+              //   child: Text('Send Email'),
+              // ),
               ElevatedButton(
                 onPressed: () => _resetPassword(context),
-                child: Text('Send Email'),
+                child: Text(
+                  'Send Email',
+                  style: TextStyle(fontSize: 18), // Increase font size
+                ),                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 254, 99, 61),
+                  foregroundColor: Color.fromARGB(255, 32, 32, 70),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5), // Set radius to 0
+                  ),
+                ),
               ),
+
             ],
           ),
         ),

@@ -38,7 +38,8 @@ class OptionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.grey[500],
+        backgroundColor: Color.fromARGB(255, 32, 32, 70),
+        foregroundColor: Colors.white,
         title: Text(mainOption.title),
       ),
       body: ListView(
@@ -50,7 +51,7 @@ class OptionScreen extends StatelessWidget {
             ),
             leading: Icon(
               subOption.icon ?? Icons.info,
-              color: Colors.blue,
+              color: Color.fromARGB(255, 32, 32, 70),//Colors.blue,
             ),
             onTap: () {
               subOption.onTap();
@@ -150,7 +151,8 @@ class Settings_tab extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(
           title: Text('Settings'),
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: Color.fromARGB(255, 32, 32, 70),
+          foregroundColor: Colors.white,
         ),
         body: Container(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -176,7 +178,7 @@ class Settings_tab extends StatelessWidget {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   leading: CircleAvatar(
-                    backgroundColor: Colors.blueAccent,
+                    backgroundColor: Color.fromARGB(255, 32, 32, 70),//Colors.blueAccent,
                     child: Icon(
                       mainOption.icon,
                       color: Colors.white,

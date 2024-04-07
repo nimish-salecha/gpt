@@ -1,20 +1,28 @@
+Color.fromARGB(255, 32, 32, 70)
+Color.fromARGB(255, 56, 134, 206)
+Color.fromARGB(255, 254, 99, 61)
+
+Colors.purple.withOpacity(0.1)
+
 Note: designigpod/cocapod/xib file [cred ui ux]
         tab bar or only meny bar (improve ui/ux)
 
 >>>create responsive to mobile and web
 >>>all things must work on web+ (ios)
->>>ui and layouting of whole project
+
+>when new user registen username is showing null [menu and dashboard]
+>feedmain category box add shadow
 
 >hiya search bar  (not working properly)
     add serbox
 
 >Predebate
     cancle and modify debate 
-    user can join before and after shedule time
+    user can't join before and after shedule time
     Co-host list at sheduling (So they dont need code to join)
     (Block user)
     reminder for debates --in app /mail/ phone top
-    Thumbnail upload
+    ]Thumbnail upload
         (Show on all debate card and debate_detail page)
     public & private (reflect in other locations)
 
@@ -51,6 +59,8 @@ Note: designigpod/cocapod/xib file [cred ui ux]
 
 
 ============Features to do at end=====================
+>Welcome page when app starts(prelogin and post login)
+
 >Settings
     Email notifications Settings change option
     Theam change option

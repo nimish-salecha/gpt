@@ -129,9 +129,12 @@ print(querySnapshot.docs[0].data()['email']);
       children: [
         Text(
           isLogin ? 'Welcome Back' : 'Sign up',
-          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 32, 32, 70)),
         ),
-        Text(isLogin ? 'Enter your credentials to login' : 'Create your account'),
+        Text(
+          isLogin ? 'Enter your credentials to login' : 'Create your account',
+          style: TextStyle( color: Color.fromARGB(255, 32, 32, 70)),
+        ),
       ],
     );
   }
@@ -148,7 +151,7 @@ print(querySnapshot.docs[0].data()['email']);
             borderRadius: BorderRadius.circular(18),
             borderSide: BorderSide.none,
           ),
-          fillColor: Colors.purple.withOpacity(0.1),
+          fillColor: Color.fromARGB(15, 32, 32, 70),
           filled: true,
           prefixIcon: Icon(Icons.email),
         ),
@@ -164,7 +167,7 @@ print(querySnapshot.docs[0].data()['email']);
             borderRadius: BorderRadius.circular(18),
             borderSide: BorderSide.none,
           ),
-          fillColor: Colors.purple.withOpacity(0.1),
+          fillColor: Color.fromARGB(15, 32, 32, 70),
           filled: true,
           prefixIcon: Icon(Icons.email),
         ),
@@ -178,7 +181,7 @@ print(querySnapshot.docs[0].data()['email']);
               borderRadius: BorderRadius.circular(18),
               borderSide: BorderSide.none,
             ),
-            fillColor: Colors.purple.withOpacity(0.1),
+            fillColor: Color.fromARGB(15, 32, 32, 70),
             filled: true,
             prefixIcon: Icon(Icons.person),
           ),
@@ -193,7 +196,7 @@ print(querySnapshot.docs[0].data()['email']);
             borderRadius: BorderRadius.circular(18),
             borderSide: BorderSide.none,
           ),
-          fillColor: Colors.purple.withOpacity(0.1),
+          fillColor: Color.fromARGB(15, 32, 32, 70),
           filled: true,
           prefixIcon: Icon(Icons.password),
         ),
@@ -222,10 +225,11 @@ print(querySnapshot.docs[0].data()['email']);
         style: ElevatedButton.styleFrom(
           shape: StadiumBorder(),
           padding: EdgeInsets.symmetric(vertical: 16),
-          backgroundColor: Colors.purple,
-          foregroundColor: Colors.black87,
+          backgroundColor: Color.fromARGB(255, 32, 32, 70),
+          foregroundColor: Colors.white,
+          
         ),
-        child: Text(isLogin ? 'Login' : 'Sign up', style: TextStyle(fontSize: 20)),
+        child: Text(isLogin ? 'LOGIN' : 'SIGN UP', style: TextStyle(fontSize: 20)),
       ),
       // "Forgot Password?" button
       TextButton(
