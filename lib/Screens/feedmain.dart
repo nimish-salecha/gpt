@@ -106,114 +106,132 @@ class _FeedMain extends State<FeedMain> {
             ],
           ),
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 32, 32, 70), // Background color of the body
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Trending Debates',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color:Color.fromARGB(255, 254, 99, 61)),
-                  ),
-                  SizedBox(height: 10),
-                  Container(
-                    height: 200,
-                    child: StreamBuilder<QuerySnapshot>(
-                      stream: _firestore.collection('debates').snapshots(),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return Center(child: CircularProgressIndicator());
-                        }
-                        final debates = snapshot.data!.docs;
-                        // Limit the number of cards shown in the trending debates column to 4
-                        final trendingDebates = debates.take(4).toList();
-                        return ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: trendingDebates.length,
-                          itemBuilder: (context, index) {
-                            final debate = trendingDebates[index];
-                            final debateTopic = debate['title'];
-                            final debateHost = _auth.currentUser?.displayName ??
-                                'Unknown'; // Assuming displayName is the host
-                            final debateId = debate.id; // Fetching debate ID
-            
-                            return _buildTrendingDebateCard(
-                                debateTopic, debateHost, debateId);
-                          },
-                        );
-                      },
+        body: Column(
+          children: [
+            Expanded(
+              child: Container(
+                color: Color.fromARGB(255, 32, 32, 70),   
+         ///from body till here code is to fill empty bkg space
+                child: SingleChildScrollView(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 32, 32, 70), // Background color of the body
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Trending Debates',
+                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color:Color.fromARGB(255, 254, 99, 61)),
+                          ),
+                          SizedBox(height: 10),
+                          Container(
+                            height: 200,
+                            child: StreamBuilder<QuerySnapshot>(
+                              stream: _firestore.collection('debates').snapshots(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return Center(child: CircularProgressIndicator());
+                                }
+                                final debates = snapshot.data!.docs;
+                                // Limit the number of cards shown in the trending debates column to 4
+                                final trendingDebates = debates.take(4).toList();
+                                return ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: trendingDebates.length,
+                                  itemBuilder: (context, index) {
+                                    final debate = trendingDebates[index];
+                                    final debateTopic = debate['title'];
+                                    final debateHost = _auth.currentUser?.displayName ??
+                                        'Unknown'; // Assuming displayName is the host
+                                    final debateId = debate.id; // Fetching debate ID
+                    
+                                    return _buildTrendingDebateCard(
+                                        debateTopic, debateHost, debateId);
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          Text(
+                            'Featured Topics',
+                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color:Color.fromARGB(255, 254, 99, 61)),
+                          ),
+                          SizedBox(height: 10),
+                          // Featured topics
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                _buildTopicChip('POLITICS'),
+                                _buildTopicChip('RELIGIOUS'),
+                                _buildTopicChip('SCIENCE AND TECHNOLOGY'),
+                                _buildTopicChip('SOCIAL ISSUES'),
+                                _buildTopicChip('ENTERTAINMENT'),
+                                _buildTopicChip('ENVIRONMENT'),
+                                _buildTopicChip('EDUCATION'),
+                                _buildTopicChip('HEALTH AND WELLNESS'),
+                                _buildTopicChip('SPORTS'),
+                                _buildTopicChip('BUSINESS AND ECONOMY'),
+                
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          // Debates by selected topic
+                          if (selectedTopic != null) ...[
+                            Text(
+                              'Debates on $selectedTopic',
+                              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 254, 99, 61)),
+                            ),
+                            SizedBox(height: 10),
+                            // StreamBuilder to fetch and display debates based on selected topic
+                            StreamBuilder<QuerySnapshot>(
+                              stream: _firestore
+                                  .collection('debates')
+                                  .where('category', isEqualTo: selectedTopic)
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  final debates = snapshot.data!.docs;
+                                  return Column(
+                                    children: debates.map<Widget>((debate) {
+                                      // Build debate card widget here
+                                      return Column(
+                                        children: [
+                                          _buildDebateCard(
+                                              debate['title'], debate['userId']),
+                                          SizedBox(height: 20),
+                                        ],
+                                      );
+                                    }).toList(),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                } else {
+                                  return CircularProgressIndicator();
+                                }
+                              },
+                            ),
+                          ],
+                          // if (selectedTopic == null) ...[
+                          //   Expanded(
+                          //     child: Container(
+                          //       color: Color.fromARGB(255, 32, 32, 70), 
+                          //     ),
+                          //   )
+                          // ]
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(height: 20),
-                  Text(
-                    'Featured Topics',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color:Color.fromARGB(255, 254, 99, 61)),
-                  ),
-                  SizedBox(height: 10),
-                  // Featured topics
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        _buildTopicChip('Politics'),
-                        _buildTopicChip('Religious'),
-                        _buildTopicChip('Science and Technology'),
-                        _buildTopicChip('Social Issues'),
-                        _buildTopicChip('Entertainment'),
-                        _buildTopicChip('Environment'),
-                        _buildTopicChip('Education'),
-                        _buildTopicChip('Health and Wellness'),
-                        _buildTopicChip('Sports'),
-                        _buildTopicChip('Business and Economy'),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  // Debates by selected topic
-                  if (selectedTopic != null) ...[
-                    Text(
-                      'Debates on $selectedTopic',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 254, 99, 61)),
-                    ),
-                    SizedBox(height: 10),
-                    // StreamBuilder to fetch and display debates based on selected topic
-                    StreamBuilder<QuerySnapshot>(
-                      stream: _firestore
-                          .collection('debates')
-                          .where('category', isEqualTo: selectedTopic)
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          final debates = snapshot.data!.docs;
-                          return Column(
-                            children: debates.map<Widget>((debate) {
-                              // Build debate card widget here
-                              return Column(
-                                children: [
-                                  _buildDebateCard(
-                                      debate['title'], debate['userId']),
-                                  SizedBox(height: 20),
-                                ],
-                              );
-                            }).toList(),
-                          );
-                        } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else {
-                          return CircularProgressIndicator();
-                        }
-                      },
-                    ),
-                  ],
-                ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -252,17 +270,18 @@ class _FeedMain extends State<FeedMain> {
       ),
     );
   }
-
+  
+// /* original -without box shadow
   Widget _buildTopicChip(String topic) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.0), // Add horizontal padding
+      padding: EdgeInsets.symmetric(horizontal: 5.0), // Add horizontal padding
       child: GestureDetector(
         onTap: () {
           fetchDebatesByTopic(topic);
         },
         child: Chip(
           label: Text(
-            topic,
+            topic.toUpperCase(),
             style: TextStyle(color: Colors.white), // Change text color here
           ),
           //Text(topic),
@@ -273,6 +292,7 @@ class _FeedMain extends State<FeedMain> {
     );
   }
 }
+// */
 
 Widget _buildDebateCard(String topic, String host) {
   return Card(
@@ -328,6 +348,7 @@ Future<String> _getUserName(String userId) async {
     return 'Unknown';
   }
 }
+
 
 /*//V2 -- before hiya added Debate_Details.dart
 import 'package:flutter/material.dart';
