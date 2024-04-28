@@ -6,6 +6,7 @@
 // v1 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:gpt/screens/debate_details.dart';
 import 'package:gpt/screens/edit_profile.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -203,8 +204,7 @@ class PrivateDebates extends StatelessWidget {
                           // Build debate card widget here
                           return Column(
                             children: [
-                              _buildDebateCard(context,
-                                  debate['title'],debate['description'], debate['scheduledDateTime'], debate['privacy']),
+                              _buildDebateCard(context,debate),
                               SizedBox(height: dheight*0.006),
                             ],
                           );
@@ -248,8 +248,7 @@ class PastDebates extends StatelessWidget {
                 final debates = snapshot.data!.docs;
                 return Column(
                   children: debates.map<Widget>((debate) {
-                    return _buildDebateCard(context,
-                        debate['title'],debate['description'], debate['scheduledDateTime'], debate['privacy']);
+                    return _buildDebateCard(context,debate);
                   }).toList(),
                 );
               } else if (snapshot.hasError) {
@@ -288,8 +287,7 @@ class FutureDebates extends StatelessWidget {
                 final debates = snapshot.data!.docs;
                 return Column(
                   children: debates.map<Widget>((debate) {
-                    return _buildDebateCard(context,
-                        debate['title'],debate['description'], debate['scheduledDateTime'], debate['privacy']);
+                    return _buildDebateCard(context,debate);
                   }).toList(),
                 );
               } else if (snapshot.hasError) {
@@ -306,7 +304,13 @@ class FutureDebates extends StatelessWidget {
 }
 
 
-Widget _buildDebateCard(BuildContext context, String topic, String description, Timestamp scheduledDateTime,  String debateType) {
+Widget _buildDebateCard(BuildContext context,DocumentSnapshot debate) {
+
+  final topic = debate['title'];
+  final description = debate['description'];
+  final scheduledDateTime = debate['scheduledDateTime'];
+  final debateType = debate['privacy'];
+  final debateId = debate.id; // Get the debate ID
 
   final currentTime = DateTime.now();
   // Convert scheduledDateTime to DateTime object
@@ -317,35 +321,40 @@ Widget _buildDebateCard(BuildContext context, String topic, String description, 
   // final cardColor = isPastDebate ? Color.fromARGB(198, 120, 117, 113):Color.fromARGB(255, 241, 232, 224);
   Color cardColor;
   if (debateType == 'Private') {
-    cardColor = isPastDebate ? Color.fromARGB(198, 120, 117, 113):Color.fromARGB(255, 241, 232, 224);
+    cardColor = isPastDebate ? Color.fromARGB(197, 244, 178, 92):Color.fromARGB(255, 241, 232, 224);
   } else {
     cardColor = Color.fromARGB(255, 241, 232, 224); // Single color for Past and Future debates
   }
 
-  return Container(
-    width: MediaQuery.of(context).size.width, // Set width to device width
-    child: Card(
-      elevation: 3,
-      color: cardColor,
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      child: Padding(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              topic,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 5),
-            Text(
-              description,
-              style: TextStyle(fontSize: 14),
-            ),
-            // SizedBox(height: 5),
-            
-            // Add additional UI elements as needed
-          ],
+  return InkWell(
+    onTap: () {
+      Get.to(() => DebateDetailsPage(debateId: debateId));
+    },
+    child: Container(
+      width: MediaQuery.of(context).size.width, // Set width to device width
+      child: Card(
+        elevation: 3,
+        color: cardColor,
+        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: Padding(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                topic,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 5),
+              Text(
+                description,
+                style: TextStyle(fontSize: 14),
+              ),
+              // SizedBox(height: 5),
+              
+              // Add additional UI elements as needed
+            ],
+          ),
         ),
       ),
     ),
