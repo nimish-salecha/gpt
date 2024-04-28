@@ -1,5 +1,7 @@
 //          User Dash Board (profile)
 
+// ignore_for_file: prefer_const_constructors
+
 //v1 code to merge with hiya code
 // v1 
 import 'package:flutter/material.dart';
@@ -13,12 +15,20 @@ class Dashboard extends StatefulWidget {
   @override
   _DashboardState createState() => _DashboardState();
 }
-
-class _DashboardState extends State<Dashboard> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
+  // Get the current user
+  User? currentUser = _auth.currentUser;
+  // Get the current user's ID
+  String currentUserId = currentUser?.uid ?? '';
+  
 
-  int _selectedIndex = 0;
+class _DashboardState extends State<Dashboard> {
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
+  // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  int _selectedIndex = 2;
   String? username;
   String? _profilePicUrl;
 
@@ -45,7 +55,6 @@ class _DashboardState extends State<Dashboard> {
 
   static List<Widget> _widgetOptions = <Widget>[
     PrivateDebates(),
-    PublicDebates(),
     PastDebates(),
     FutureDebates(),
   ];
@@ -141,20 +150,15 @@ class _DashboardState extends State<Dashboard> {
                 icon: Icon(Icons.lock),
                 color: _selectedIndex == 0 ? Colors.green : Color.fromARGB(255, 32, 32, 70),
               ),
-              // IconButton(
-              //   onPressed: () => _onItemTapped(1),
-              //   icon: Icon(Icons.public),
-              //   color: _selectedIndex == 1 ? Colors.green : Color.fromARGB(255, 32, 32, 70),
-              // ),
               IconButton(
-                onPressed: () => _onItemTapped(2),
+                onPressed: () => _onItemTapped(1),
                 icon: Icon(Icons.history),
-                color: _selectedIndex == 2 ? Colors.green : Color.fromARGB(255, 32, 32, 70),
+                color: _selectedIndex == 1 ? Colors.green : Color.fromARGB(255, 32, 32, 70),
               ),
               IconButton(
-                onPressed: () => _onItemTapped(3),
+                onPressed: () => _onItemTapped(2),
                 icon: Icon(Icons.schedule),
-                color: _selectedIndex == 3 ? Colors.green : Color.fromARGB(255, 32, 32, 70),
+                color: _selectedIndex == 2 ? Colors.green : Color.fromARGB(255, 32, 32, 70),
               ),
             ],
           ),
@@ -173,17 +177,49 @@ class _DashboardState extends State<Dashboard> {
 class PrivateDebates extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Private Debates'),
-    );
-  }
-}
-
-class PublicDebates extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Public Debates'),
+    final dwidth = MediaQuery.of(context).size.width;
+    final dheight = MediaQuery.of(context).size.height;
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Text(
+                  'Private Debates',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color:Color.fromARGB(255, 32, 32, 70)),
+                ),
+                SizedBox(height: 10),
+                // StreamBuilder to fetch and display debates based on selected topic
+                StreamBuilder<QuerySnapshot>(
+                  stream: _firestore.collection('debates')
+                      .where('userId', isEqualTo: currentUserId)
+                      .where('privacy', isEqualTo: 'Private')
+                      .orderBy('scheduledDateTime', descending: true)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final debates = snapshot.data!.docs;
+                      return Column(
+                        children: debates.map<Widget>((debate) {
+                          // Build debate card widget here
+                          return Column(
+                            children: [
+                              _buildDebateCard(context,
+                                  debate['title'],debate['description'], debate['scheduledDateTime'], debate['privacy']),
+                              SizedBox(height: dheight*0.006),
+                            ],
+                          );
+                        }).toList(),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  },
+                ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -191,8 +227,40 @@ class PublicDebates extends StatelessWidget {
 class PastDebates extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Past Debates'),
+    final currentTimePlus40Mins = DateTime.now().add(Duration(minutes: 40));
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Text(
+            'Past Debates',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color:Color.fromARGB(255, 32, 32, 70)),
+          ),
+          SizedBox(height: 10),
+          StreamBuilder<QuerySnapshot>(
+            stream: _firestore.collection('debates')
+                .where('userId', isEqualTo: currentUserId)
+                .where('privacy', isEqualTo: 'Public')
+                .where('scheduledDateTime', isLessThan: currentTimePlus40Mins)
+                .orderBy('scheduledDateTime', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final debates = snapshot.data!.docs;
+                return Column(
+                  children: debates.map<Widget>((debate) {
+                    return _buildDebateCard(context,
+                        debate['title'],debate['description'], debate['scheduledDateTime'], debate['privacy']);
+                  }).toList(),
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return CircularProgressIndicator();
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
 }
@@ -200,11 +268,114 @@ class PastDebates extends StatelessWidget {
 class FutureDebates extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Future Debates'),
+    final currentTimePlus40Mins = DateTime.now().add(Duration(minutes: 40));
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Text(
+            'Future Debates',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color:Color.fromARGB(255, 32, 32, 70)),
+          ),
+          StreamBuilder<QuerySnapshot>(
+            stream: _firestore.collection('debates')
+                .where('userId', isEqualTo: currentUserId)
+                .where('privacy', isEqualTo: 'Public')
+                .where('scheduledDateTime', isGreaterThan: currentTimePlus40Mins)
+                .orderBy('scheduledDateTime', descending: true)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final debates = snapshot.data!.docs;
+                return Column(
+                  children: debates.map<Widget>((debate) {
+                    return _buildDebateCard(context,
+                        debate['title'],debate['description'], debate['scheduledDateTime'], debate['privacy']);
+                  }).toList(),
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return CircularProgressIndicator();
+              }
+            },
+          ),
+        ],
+      ),
     );
   }
 }
+
+
+Widget _buildDebateCard(BuildContext context, String topic, String description, Timestamp scheduledDateTime,  String debateType) {
+
+  final currentTime = DateTime.now();
+  // Convert scheduledDateTime to DateTime object
+  final scheduledTime = scheduledDateTime.toDate();
+  // Check if scheduledDateTime is less than current time
+  final isPastDebate = scheduledTime.isBefore(currentTime);
+  // Define the card color based on whether the debate is past or future
+  // final cardColor = isPastDebate ? Color.fromARGB(198, 120, 117, 113):Color.fromARGB(255, 241, 232, 224);
+  Color cardColor;
+  if (debateType == 'Private') {
+    cardColor = isPastDebate ? Color.fromARGB(198, 120, 117, 113):Color.fromARGB(255, 241, 232, 224);
+  } else {
+    cardColor = Color.fromARGB(255, 241, 232, 224); // Single color for Past and Future debates
+  }
+
+  return Container(
+    width: MediaQuery.of(context).size.width, // Set width to device width
+    child: Card(
+      elevation: 3,
+      color: cardColor,
+      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: Padding(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              topic,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 5),
+            Text(
+              description,
+              style: TextStyle(fontSize: 14),
+            ),
+            // SizedBox(height: 5),
+            
+            // Add additional UI elements as needed
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+
+Future<String> _getUserName(String userId) async {
+  try {
+    User? user = await FirebaseAuth.instance.userChanges().first;
+    if (user != null) {
+      return user.displayName ?? 'Unknown';
+    } else {
+      return 'Unknown';
+    }
+  } catch (e) {
+    print('Error fetching username: $e');
+    return 'Unknown';
+  }
+}
+
+
+// class PublicDebates extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Text('Public Debates'),
+//     );
+//   }
+// }
 
 
 /* // v1 

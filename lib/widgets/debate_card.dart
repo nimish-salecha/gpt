@@ -1,90 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:gpt/screens/edit_debate.dart';
-import 'package:gpt/screens/predebate.dart';
-import 'package:gpt/widgets/debate_card.dart';
-// import 'package:share_plus/share_plus.dart';
-// import 'package:gpt/screens/zego/live_page.dart';
-// import 'package:gpt/screens/zego/constants.dart';
-// import 'package:intl/intl.dart';
-// import 'package:zego_uikit_prebuilt_live_streaming/zego_uikit_prebuilt_live_streaming.dart';
+import 'package:gpt/screens/edit_debate.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:gpt/screens/zego/live_page.dart';
+import 'package:gpt/screens/zego/constants.dart';
+import 'package:intl/intl.dart';
+import 'package:zego_uikit_prebuilt_live_streaming/zego_uikit_prebuilt_live_streaming.dart';
 
-class ScheduledDebatesPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Scheduled Debates'),
-      ),
-      body: ScheduledDebatesList(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => PreDebate()),
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
 
-class ScheduledDebatesList extends StatelessWidget {
-  final User? user = FirebaseAuth.instance.currentUser;
-
-  @override
-  Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('debates')
-          .where('userId', isEqualTo: user!.uid) // Filter debates by user ID
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
-        }
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        final List<QueryDocumentSnapshot> debates = snapshot.data!.docs;
-
-        return ListView.builder(
-          itemCount: debates.length,
-          itemBuilder: (context, index) {
-            final debate = debates[index];
-            return FutureBuilder<DocumentSnapshot>(
-              future: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(debate['userId'])
-                  .get(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                }
-
-                final userData = snapshot.data!;
-                final hostName = userData['username'] ?? 'Unknown';
-                // final joincode =
-                return DebateCard(debate: debate, hostName: hostName);
-              },
-            );
-          },
-        );
-      },
-    );
-  }
-}
-
-//========code for debate cards================
-/*
 class DebateCard extends StatefulWidget {
   final QueryDocumentSnapshot debate;
   final String hostName;
@@ -251,5 +175,4 @@ class _DebateCardState extends State<DebateCard> {
       );
     }
   }
-}*/
-
+}
