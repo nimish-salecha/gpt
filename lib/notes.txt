@@ -1,3 +1,11 @@
+search, notifications, dashboard (withot restart), logo, 
+viewer join without code, 
+web
+Summary
+[participants list at time of debate creation],
+recommendation category, keywords
+
+
 Color.fromARGB(255, 32, 32, 70)
 Color.fromARGB(255, 56, 134, 206)
 Color.fromARGB(255, 254, 99, 61)
@@ -22,7 +30,7 @@ Note:   tab bar or only meny bar (improve ui/ux)
     reminder for debates --in app /mail/ phone top
     ]Thumbnail upload
         (Show on all debate card and debate_detail page)
-    public & private (reflect in other locations)
+    ]public & private (reflect in other locations)
 
 >Feedmain
     Trending debate algo
@@ -31,7 +39,7 @@ Note:   tab bar or only meny bar (improve ui/ux)
 >Login  
     ]Forget Password
     ]cleare textfeitd when switch b/w login <--> register
-    confirm Password feild at registration
+    ]confirm Password feild at registration
 
     (error msg)
     (can login with uname)
