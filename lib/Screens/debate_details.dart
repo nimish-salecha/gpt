@@ -4,8 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class DebateDetailsPage extends StatefulWidget {
   final String debateId;
+  final String dtitle;
 
-  DebateDetailsPage({required this.debateId});
+  DebateDetailsPage({required this.debateId, required this.dtitle});
 
   @override
   State<DebateDetailsPage> createState() => _DebateDetailsPageState();
@@ -16,7 +17,7 @@ class _DebateDetailsPageState extends State<DebateDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Debate Details'),
+        title: Text( '${widget.dtitle}' ?? 'Debate Details'),
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance

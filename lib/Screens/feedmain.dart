@@ -240,7 +240,7 @@ class _FeedMain extends State<FeedMain> {
   Widget _buildTrendingDebateCard(String topic, String host, String debateId) {
     return InkWell(
       onTap: () {
-        Get.to(() => DebateDetailsPage(debateId: debateId));
+        Get.to(() => DebateDetailsPage(debateId: debateId, dtitle:topic));
         // Get.to(() => AboutUs());
         // print("fdfd");
       },

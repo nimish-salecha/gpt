@@ -328,7 +328,7 @@ Widget _buildDebateCard(BuildContext context,DocumentSnapshot debate) {
 
   return InkWell(
     onTap: () {
-      Get.to(() => DebateDetailsPage(debateId: debateId));
+      Get.to(() => DebateDetailsPage(debateId: debateId, dtitle: topic));
     },
     child: Container(
       width: MediaQuery.of(context).size.width, // Set width to device width
