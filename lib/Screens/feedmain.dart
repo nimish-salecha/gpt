@@ -139,7 +139,7 @@ class _FeedMain extends State<FeedMain> {
                           final debateId = debate.id; // Fetching debate ID
 
                           return _buildTrendingDebateCard(
-                              debateTopic, debateHost, debateId);
+                              debateTopic, debate['description'], debateHost, debateId);
                         },
                       );
                     },
@@ -192,7 +192,7 @@ class _FeedMain extends State<FeedMain> {
                             return Column(
                               children: [
                                 _buildDebateCard(context,
-                                    debate['title'], debate['userId'], debate.id),
+                                    debate['title'], debate['description'], debate['userId'], debate.id),
                                 SizedBox(height: 20),
                               ],
                             );
@@ -215,7 +215,7 @@ class _FeedMain extends State<FeedMain> {
   }
 
 
-  Widget _buildTrendingDebateCard(String topic, String host, String debateId) {
+  Widget _buildTrendingDebateCard(String topic,String desp, String host, String debateId) {
     return InkWell(
       onTap: () {
         Get.to(() => DebateDetailsPage(
@@ -225,7 +225,7 @@ class _FeedMain extends State<FeedMain> {
       },
       child: Card(
         elevation: 3,
-        color: Color.fromARGB(255, 252, 209, 228),
+        color: Color.fromARGB(197, 244, 178, 92),
         margin: EdgeInsets.only(right: 10),
         child: Container(
           width: 200, // Set the width of the card
@@ -243,14 +243,16 @@ class _FeedMain extends State<FeedMain> {
                   future: _getUserName(host), // Fetch host name asynchronously
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text('Host: Loading...');
+                      return Text('Hosted by: Loading...');
                     } else if (snapshot.hasData) {
-                      return Text('Host: ${snapshot.data}');
+                      return Text('Hosted by ${snapshot.data}');
                     } else {
-                      return Text('Host: Unknown');
+                      return Text('');
                     }
                   },
                 ),
+                SizedBox(height: 5),
+                Text(desp),
               ],
             ),
           ),
@@ -276,7 +278,7 @@ class _FeedMain extends State<FeedMain> {
   }
 }
 
-Widget _buildDebateCard(context,String topic, String host, String debateId) {
+Widget _buildDebateCard(context,String topic,String desp, String host, String debateId) {
   return InkWell(
       onTap: () {
         Get.to(() => DebateDetailsPage(
@@ -286,7 +288,7 @@ Widget _buildDebateCard(context,String topic, String host, String debateId) {
       },
   child: Card(
   elevation: 3,
-  color: Color.fromARGB(255, 255, 177, 211),
+  color: Color.fromARGB(197, 244, 178, 92),
   margin: EdgeInsets.only(right: 10),
   child: Container(
     width: MediaQuery.of(context).size.width, // Set the width to the width of the device
@@ -300,26 +302,30 @@ Widget _buildDebateCard(context,String topic, String host, String debateId) {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 5),
-          FutureBuilder(
-            future: _getUserName(host),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Text('Host: Loading...');
-              } else {
-                return Text('Host: ${snapshot.data}');
-              }
-            },
-          ),
-          // SizedBox(height: 5),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.end,
-          //   children: [
-          //     TextButton(
-          //       onPressed: () {},
-          //       child: Text('Join'),
-          //     ),
-          //   ],
+          // FutureBuilder(
+          //   future: _getUserName(host),
+          //   builder: (context, snapshot) {
+          //     if (snapshot.connectionState == ConnectionState.waiting) {
+          //       return Text('Host: Loading...');
+          //     } else {
+          //       return Text('Host: ${snapshot.data}');
+          //     }
+          //   },
           // ),
+          SizedBox(height: 5),
+                Text(desp),
+
+        //join button
+              // SizedBox(height: 5),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.end,
+              //   children: [
+              //     TextButton(
+              //       onPressed: () {},
+              //       child: Text('Join'),
+              //     ),
+              //   ],
+              // ),
         ],
       ),
     ),

@@ -1,5 +1,7 @@
-search, notifications, dashboard (withot restart), logo, 
-viewer join without code, 
+]search,
+ notifications, 
+ dashboard (withot restart), ]logo, 
+]viewer join without code, 
 web
 Summary
 [participants list at time of debate creation],
@@ -20,7 +22,7 @@ Note:   tab bar or only meny bar (improve ui/ux)
 ]>feed main when load bkg = white @ debate card area
 
 >hiya search bar  (not working properly)
-    add serbox
+ ]   add serbox
 
 >Predebate
     ]cancle and modify debate 
@@ -34,7 +36,7 @@ Note:   tab bar or only meny bar (improve ui/ux)
 
 >Feedmain
     Trending debate algo
-    under category section debates are not comming
+  ]  under category section debates are not comming
     
 >Login  
     ]Forget Password
