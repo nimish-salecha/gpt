@@ -1,5 +1,4 @@
-// //Search debates and add filter and sort
-//v5 - 29apr 2 1pm
+//v6 --by nimish -- all working
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gpt/Screens/debate_details.dart';
@@ -81,8 +80,8 @@ class _DebateSearchPageState extends State<DebateSearchPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  FutureBuilder(
-                    future: _getThumbnailUrl(debate['_thumbnailUrl']),
+                  FutureBuilder<String?>(
+                    future: _getThumbnailUrl(debate.id),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return CircularProgressIndicator();
@@ -97,8 +96,12 @@ class _DebateSearchPageState extends State<DebateSearchPage> {
                                 width: double.infinity,
                                 height: 150.0,
                               )
-                            : Icon(Icons
-                                .image); // Placeholder icon if thumbnailUrl is null
+                            : Image.asset(
+                                'assets/category/debate.png',
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: 150.0,
+                              );
                       }
                     },
                   ),
@@ -139,14 +142,18 @@ class _DebateSearchPageState extends State<DebateSearchPage> {
     }
   }
 
-  Future<String?> _getThumbnailUrl(String? thumbnailId) async {
-    if (thumbnailId == null) return null;
+  Future<String?> _getThumbnailUrl(String debateId) async {
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection('debates')
-          .doc(thumbnailId)
+          .doc(debateId)
           .get();
-      return snapshot['_thumbnailUrl'];
+      final data = snapshot.data();
+      if (data != null && data.containsKey('_thumbnailUrl')) {
+        return data['_thumbnailUrl'] as String?;
+      } else {
+        return null;
+      }
     } catch (e) {
       print('Error fetching thumbnail URL: $e');
       return null;
@@ -166,6 +173,441 @@ class _DebateSearchPageState extends State<DebateSearchPage> {
     }
   }
 
+  void _searchDebates(String query) async {
+  if (query.isNotEmpty) {
+    try {
+      // Search by username if the query matches a username exactly
+      QuerySnapshot usernameExactQuerySnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('username', isEqualTo: query)
+              .get();
+
+      // If the query does not match a username exactly, search by title or category
+      QuerySnapshot titleQuerySnapshot = await FirebaseFirestore.instance
+          .collection('debates')
+          .where('title', isGreaterThanOrEqualTo: query)
+          .get();
+
+      QuerySnapshot categoryQuerySnapshot = await FirebaseFirestore.instance
+          .collection('debates')
+          .where('category', isGreaterThanOrEqualTo: query)
+          .get();
+
+      // Combine all query snapshots
+      List<QueryDocumentSnapshot> allResults = [
+        ...titleQuerySnapshot.docs,
+        ...categoryQuerySnapshot.docs,
+      ];
+
+      // Prioritize debates hosted by the user if username matches exactly
+      if (usernameExactQuerySnapshot.docs.isNotEmpty) {
+  List<QueryDocumentSnapshot> usernameResults = [];
+  for (QueryDocumentSnapshot doc in usernameExactQuerySnapshot.docs) {
+    QuerySnapshot result = await FirebaseFirestore.instance
+        .collection('debates')
+        .where('userId', isEqualTo: doc.id)
+        .get();
+    usernameResults.addAll(result.docs);
+  }
+  allResults.addAll(usernameResults);
+}
+
+
+      // Filter out private debates
+      List<QueryDocumentSnapshot> publicResults = allResults
+          .where((doc) => (doc.data() as Map<String, dynamic>)['privacy'] != 'Private')
+          .toList();
+
+      // Remove duplicates
+      List<QueryDocumentSnapshot> uniqueResults =
+          publicResults.toSet().toList();
+
+      // Sort results based on relevance
+      uniqueResults.sort((a, b) {
+        String aTitle = (a.data() as Map<String, dynamic>)['title'];
+        String bTitle = (b.data() as Map<String, dynamic>)['title'];
+        int aScore = _calculateScore(aTitle, query);
+        int bScore = _calculateScore(bTitle, query);
+        return bScore.compareTo(aScore);
+      });
+
+      setState(() {
+        _searchResults = uniqueResults;
+      });
+    } catch (e) {
+      print('Error searching debates: $e');
+    }
+  } else {
+    setState(() {
+      _searchResults.clear();
+    });
+  }
+
+  
+}
+int _calculateScore(String title, String query) {
+  // Calculate a score based on the similarity of the title to the query
+  // You can implement your scoring logic here
+  int score = 0;
+  if (title.toLowerCase().contains(query.toLowerCase())) {
+    score += 10; // Increase score if the title contains the query
+  }
+  return score;
+}
+}
+
+
+
+/*//v5 - nimish code working -- but unable to fetch thumbnail from firebae
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gpt/Screens/debate_details.dart';
+
+class DebateSearchPage extends StatefulWidget {
+  @override
+  _DebateSearchPageState createState() => _DebateSearchPageState();
+}
+
+class _DebateSearchPageState extends State<DebateSearchPage> {
+  TextEditingController _searchController = TextEditingController();
+  List<DocumentSnapshot> _searchResults = [];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Debate Search'),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Search Debates',
+                border: OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    _searchDebates(_searchController.text);
+                  },
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: _buildSearchResults(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchResults() {
+    if (_searchResults.isEmpty) {
+      return Center(
+        child: Text('No results found'),
+      );
+    } else {
+      return GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 8.0,
+          mainAxisSpacing: 8.0,
+          childAspectRatio: 0.75,
+        ),
+        itemCount: _searchResults.length,
+        itemBuilder: (context, index) {
+          final debate = _searchResults[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DebateDetailsPage(
+                    debateId: debate.id,
+                    dtitle: '',
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                color: Colors.grey[200],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FutureBuilder<String?>(
+  future: _getThumbnailUrl(debate['_thumbnailUrl']),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return CircularProgressIndicator();
+    } else if (snapshot.hasError) {
+      return Icon(Icons.error);
+    } else {
+      final thumbnailUrl = snapshot.data;
+      print('Thumbnail URL: $thumbnailUrl');
+      return thumbnailUrl != null
+          ? Image.network(
+              thumbnailUrl,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: 150.0,
+            )
+          : Image.asset(
+              'assets/category/debate.png',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: 150.0,
+            );
+    }
+  },
+),
+
+/*//unable to load any image
+                  // FutureBuilder(
+                  //   future: _getThumbnailUrl(debate['_thumbnailUrl']),
+                  //   builder: (context, snapshot) {
+                  //     if (snapshot.connectionState == ConnectionState.waiting) {
+                  //       return CircularProgressIndicator();
+                  //     } else if (snapshot.hasError) {
+                  //       return Icon(Icons.error);
+                  //     } else {
+                  //       final thumbnailUrl = snapshot.data;
+                  //       return thumbnailUrl != null
+                  //           ? Image.network(
+                  //               thumbnailUrl,
+                  //               fit: BoxFit.cover,
+                  //               width: double.infinity,
+                  //               height: 150.0,
+                  //             )
+                  //           : Icon(Icons
+                  //               .image); // Placeholder icon if thumbnailUrl is null
+                  //     }
+                  //   },
+                  // ),*/
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          debate['title'] ?? '',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 4.0),
+                        FutureBuilder(
+                          future: _getUserName(debate['userId']),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Text('Host: Loading...');
+                            } else if (snapshot.hasData) {
+                              return Text('Host: ${snapshot.data}');
+                            } else {
+                              return Text('Host: Unknown');
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
+  }
+
+Future<String?> _getThumbnailUrl(String? thumbnailId) async {
+  print(thumbnailId);
+  if (thumbnailId == null) return null;
+  try {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('debates')
+        .doc(thumbnailId)
+        .get();
+    final data = snapshot.data();
+    print('Thumbnail Snapshot Data: $data');
+    final thumbnailUrl = data?['_thumbnailUrl'];
+    print('Thumbnail URL: $thumbnailUrl');
+    return thumbnailUrl;
+  } catch (e) {
+    print('Error fetching thumbnail URL: $e');
+    return null;
+  }
+}
+
+
+//unable to load any image
+  // Future<String?> _getThumbnailUrl(String? thumbnailId) async {
+  //   if (thumbnailId == null) return null;
+  //   try {
+  //     final snapshot = await FirebaseFirestore.instance
+  //         .collection('debates')
+  //         .doc(thumbnailId)
+  //         .get();
+  //     return snapshot['_thumbnailUrl'];
+  //   } catch (e) {
+  //     print('Error fetching thumbnail URL: $e');
+  //     return null;
+  //   }
+  // }
+
+  Future<String> _getUserName(String userId) async {
+    try {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      return userSnapshot['username'];
+    } catch (e) {
+      print('Error fetching username: $e');
+      return 'Unknown';
+    }
+  }
+//search queary v2 - nimish
+void _searchDebates(String query) async {
+  if (query.isNotEmpty) {
+    try {
+      // Search by username if the query matches a username exactly
+      QuerySnapshot usernameExactQuerySnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('username', isEqualTo: query)
+              .get();
+
+      // If the query does not match a username exactly, search by title or category
+      QuerySnapshot titleQuerySnapshot = await FirebaseFirestore.instance
+          .collection('debates')
+          .where('title', isGreaterThanOrEqualTo: query)
+          .get();
+
+      QuerySnapshot categoryQuerySnapshot = await FirebaseFirestore.instance
+          .collection('debates')
+          .where('category', isGreaterThanOrEqualTo: query)
+          .get();
+
+      // Combine all query snapshots
+      List<QueryDocumentSnapshot> allResults = [
+        ...titleQuerySnapshot.docs,
+        ...categoryQuerySnapshot.docs,
+      ];
+
+      // Prioritize debates hosted by the user if username matches exactly
+      if (usernameExactQuerySnapshot.docs.isNotEmpty) {
+  List<QueryDocumentSnapshot> usernameResults = [];
+  for (QueryDocumentSnapshot doc in usernameExactQuerySnapshot.docs) {
+    QuerySnapshot result = await FirebaseFirestore.instance
+        .collection('debates')
+        .where('userId', isEqualTo: doc.id)
+        .get();
+    usernameResults.addAll(result.docs);
+  }
+  allResults.addAll(usernameResults);
+}
+
+
+      // Filter out private debates
+      List<QueryDocumentSnapshot> publicResults = allResults
+          .where((doc) => (doc.data() as Map<String, dynamic>)['privacy'] != 'Private')
+          .toList();
+
+      // Remove duplicates
+      List<QueryDocumentSnapshot> uniqueResults =
+          publicResults.toSet().toList();
+
+      // Sort results based on relevance
+      uniqueResults.sort((a, b) {
+        String aTitle = (a.data() as Map<String, dynamic>)['title'];
+        String bTitle = (b.data() as Map<String, dynamic>)['title'];
+        int aScore = _calculateScore(aTitle, query);
+        int bScore = _calculateScore(bTitle, query);
+        return bScore.compareTo(aScore);
+      });
+
+      setState(() {
+        _searchResults = uniqueResults;
+      });
+    } catch (e) {
+      print('Error searching debates: $e');
+    }
+  } else {
+    setState(() {
+      _searchResults.clear();
+    });
+  }
+}
+
+int _calculateScore(String title, String query) {
+  // Calculate a score based on the similarity of the title to the query
+  // You can implement your scoring logic here
+  int score = 0;
+  if (title.toLowerCase().contains(query.toLowerCase())) {
+    score += 10; // Increase score if the title contains the query
+  }
+  return score;
+}
+
+
+
+/*//srearch queary new code -- with bing ai  -- nimish\
+void _searchDebates(String query) async {
+  if (query.isNotEmpty) {
+    try {
+      // Search by username if the query matches a username exactly
+      QuerySnapshot usernameExactQuerySnapshot =
+          await FirebaseFirestore.instance
+              .collection('debates')
+              .where('userId', isEqualTo: query)
+              .get();
+
+      // If the query does not match a username exactly, search by title or category
+      QuerySnapshot titleQuerySnapshot = await FirebaseFirestore.instance
+          .collection('debates')
+          .where('title', isGreaterThanOrEqualTo: query)
+          .get();
+
+      QuerySnapshot categoryQuerySnapshot = await FirebaseFirestore.instance
+          .collection('debates')
+          .where('category', isGreaterThanOrEqualTo: query)
+          .get();
+
+      List<QueryDocumentSnapshot> allResults = [
+        ...titleQuerySnapshot.docs,
+        ...categoryQuerySnapshot.docs,
+      ];
+
+      // Filter out private debates
+      List<QueryDocumentSnapshot> publicResults = allResults.where((doc) => (doc.data() as Map<String, dynamic>)['privacy'] != 'Private').toList();
+
+      // Remove duplicates
+      List<QueryDocumentSnapshot> uniqueResults = publicResults.toSet().toList();
+
+      setState(() {
+        _searchResults = uniqueResults;
+      });
+    } catch (e) {
+      print('Error searching debates: $e');
+    }
+  } else {
+    setState(() {
+      _searchResults.clear();
+    });
+  }
+}
+*/
+
+
+/*hiya code -- she says private also showing
   void _searchDebates(String query) async {
     if (query.isNotEmpty) {
       try {
@@ -216,9 +658,9 @@ class _DebateSearchPageState extends State<DebateSearchPage> {
         _searchResults.clear();
       });
     }
-  }
+  }*/
 
-}
+}*/
 
 
 /*//v4  -- hiya   -- 29april 1:31 am

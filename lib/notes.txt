@@ -1,6 +1,6 @@
 ]search,
- notifications, 
- dashboard (withot restart), ]logo, 
+ notifications, notifications, 
+ dashboard (withot restart -- debates list not changis even if new user logged n), ]logo, 
 ]viewer join without code, 
 web
 Summary
@@ -26,7 +26,7 @@ Note:   tab bar or only meny bar (improve ui/ux)
 
 >Predebate
     ]cancle and modify debate 
-    user can't join before and after shedule time
+    ]user can't join before and after shedule time
     Co-host list at sheduling (So they dont need code to join)
     (Block user)
     reminder for debates --in app /mail/ phone top
