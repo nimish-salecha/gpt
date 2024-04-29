@@ -176,6 +176,100 @@ class _DebateSearchPageState extends State<DebateSearchPage> {
   void _searchDebates(String query) async {
   if (query.isNotEmpty) {
     try {
+      // Split the query into individual words
+      List<String> keywords = query.split(' ');
+
+      // Search by username if the query matches a username exactly
+      QuerySnapshot usernameExactQuerySnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('username', isEqualTo: query)
+              .get();
+
+      // If the query does not match a username exactly, search by title or category
+      QuerySnapshot titleQuerySnapshot = await FirebaseFirestore.instance
+          .collection('debates')
+          .where('title', arrayContainsAny: keywords)
+          .get();
+
+      QuerySnapshot categoryQuerySnapshot = await FirebaseFirestore.instance
+          .collection('debates')
+          .where('category', arrayContainsAny: keywords)
+          .get();
+
+      // Combine all query snapshots
+      List<QueryDocumentSnapshot> allResults = [
+        ...titleQuerySnapshot.docs,
+        ...categoryQuerySnapshot.docs,
+      ];
+
+      // Prioritize debates hosted by the user if username matches exactly
+      if (usernameExactQuerySnapshot.docs.isNotEmpty) {
+        List<QueryDocumentSnapshot> usernameResults = [];
+        for (QueryDocumentSnapshot doc in usernameExactQuerySnapshot.docs) {
+          QuerySnapshot result = await FirebaseFirestore.instance
+              .collection('debates')
+              .where('userId', isEqualTo: doc.id)
+              .get();
+          usernameResults.addAll(result.docs);
+        }
+        allResults.addAll(usernameResults);
+      }
+
+      // Filter out private debates
+      List<QueryDocumentSnapshot> publicResults = allResults
+          .where((doc) =>
+              (doc.data() as Map<String, dynamic>)['privacy'] != 'Private')
+          .toList();
+
+      // Remove duplicates
+      List<QueryDocumentSnapshot> uniqueResults =
+          publicResults.toSet().toList();
+
+      // Sort results based on relevance
+      uniqueResults.sort((a, b) {
+        String aTitle = (a.data() as Map<String, dynamic>)['title'];
+        String bTitle = (b.data() as Map<String, dynamic>)['title'];
+        int aScore = _calculateScore(aTitle, keywords);
+        int bScore = _calculateScore(bTitle, keywords);
+        return bScore.compareTo(aScore);
+      });
+
+      setState(() {
+        _searchResults = uniqueResults;
+      });
+    } catch (e) {
+      print('Error searching debates: $e');
+    }
+  } else {
+    setState(() {
+      _searchResults.clear();
+    });
+  }
+}
+
+int _calculateScore(String title, List<String> keywords) {
+  // Calculate a score based on the similarity of the title to the query
+  int score = 0;
+  String lowercaseTitle = title.toLowerCase();
+  for (String keyword in keywords) {
+    if (lowercaseTitle.contains(keyword.toLowerCase())) {
+      // Increase score if the keyword is found in the title
+      score += 10;
+      // Increase score further if the keyword matches at the beginning of the title
+      if (lowercaseTitle.startsWith(keyword.toLowerCase())) {
+        score += 5;
+      }
+    }
+  }
+  return score;
+}
+
+
+/*  working but unable to find mult word debate and some more like this
+  void _searchDebates(String query) async {
+  if (query.isNotEmpty) {
+    try {
       // Search by username if the query matches a username exactly
       QuerySnapshot usernameExactQuerySnapshot =
           await FirebaseFirestore.instance
@@ -254,7 +348,7 @@ int _calculateScore(String title, String query) {
     score += 10; // Increase score if the title contains the query
   }
   return score;
-}
+}*/
 }
 
 

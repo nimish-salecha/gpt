@@ -90,8 +90,9 @@ class _DebateDetailsPageState extends State<DebateDetailsPage> {
           isHost = currentUserId == debateUserId;
           print(isHost);
 
+
           return FutureBuilder(
-            future: _getUserName(),
+            future: _getHostName(debateData['userId']),
             builder: (context, AsyncSnapshot<String> hostSnapshot) {
               if (hostSnapshot.connectionState == ConnectionState.waiting) {
                 return Center(
@@ -104,6 +105,21 @@ class _DebateDetailsPageState extends State<DebateDetailsPage> {
                 );
               }
               String host = hostSnapshot.data!.toUpperCase();
+  /*Fetching current user name instead of hostname
+          FutureBuilder(
+            future: _getUserName(),
+            builder: (context, AsyncSnapshot<String> hostSnapshot) {
+              if (hostSnapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (!hostSnapshot.hasData) {
+                return Center(
+                  child: Text('Host not found!'),
+                );
+              }
+              String host = hostSnapshot.data!.toUpperCase();*/
               return SingleChildScrollView(
                 padding: EdgeInsets.all(20.0),
                 child: Column(
@@ -323,6 +339,25 @@ class _DebateDetailsPageState extends State<DebateDetailsPage> {
     return '$title - $category\n$description';
   }
 
+Future<String> _getHostName(String hostUserId) async {
+  try {
+    DocumentSnapshot<Map<String, dynamic>> userData = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(hostUserId)
+        .get();
+
+    if (userData.exists) {
+      String hostName = userData['username'] ?? 'Unknown';
+      return hostName;
+    } else {
+      return 'Unknown';
+    }
+  } catch (e) {
+    print('Error fetching host username: $e');
+    return 'Unknown';
+  }
+}
+/*Fetching current user name instead of hostname
   Future<String> _getUserName() async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
@@ -335,7 +370,7 @@ class _DebateDetailsPageState extends State<DebateDetailsPage> {
       print('Error fetching username: $e');
       return 'Unknown';
     }
-  }
+  }*/
 
   Future<String?> _getImageUrl() async {
     try {
