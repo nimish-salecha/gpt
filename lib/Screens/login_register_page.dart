@@ -264,8 +264,16 @@ print(querySnapshot.docs[0].data()['email']);
 
   @override
   Widget build(BuildContext context) {
+    final dwidth = MediaQuery.of(context).size.width;
+    final dheight = MediaQuery.of(context).size.height;
     return Scaffold(
-      appBar: AppBar(title: Text('NexoDeb8')),    //can add app logo, applogo
+      appBar: AppBar(
+          title: Image.asset(
+            'assets/nexo_logo.png',
+            height: dheight * 0.6,
+            width: dwidth * 0.5,
+          ),
+        ),
       body: SingleChildScrollView(
         child: Container(
           padding: EdgeInsets.all(20),

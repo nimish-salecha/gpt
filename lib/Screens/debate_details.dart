@@ -20,7 +20,32 @@ class DebateDetailsPage extends StatefulWidget {
 }
 
 class _DebateDetailsPageState extends State<DebateDetailsPage> {
-  bool isHost = false; // Set this value based on your logic
+  bool isHost = false; 
+
+   @override
+  void initState() {
+    super.initState();
+    fetchUser();
+  }
+
+  Future<void> fetchUser() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot<Map<String, dynamic>> userData =
+            await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        setState(() {
+          localUserID = user.uid;
+        });
+        if (userData.exists) {
+          uname = userData['username'] ?? '';
+          print('uname= $uname  --uid= $localUserID');
+        }
+      }
+    } catch (e) {
+      print('Error fetching profile data: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +82,13 @@ class _DebateDetailsPageState extends State<DebateDetailsPage> {
           String timeString = DateFormat('HH:mm:ss').format(datetime);
 
           String summary = generateSummary(title, category, description);
+
+          //for join/golive button ishost or not
+          String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+          String debateUserId = debateData['userId'];
+          // // Compare the two values to determine if the current user is the host
+          isHost = currentUserId == debateUserId;
+          print(isHost);
 
           return FutureBuilder(
             future: _getUserName(),
@@ -186,6 +218,37 @@ class _DebateDetailsPageState extends State<DebateDetailsPage> {
                         },
                       ),
                     ),
+                    SizedBox(height: 10.0),
+                    Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.8, // Set the width to 80% of the device width
+        child: ElevatedButton(
+          child: Text(isHost ? 'Start' : 'Join'),
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0),
+              ),
+            ),
+          ),
+          onPressed: () {
+            if (ZegoUIKitPrebuiltLiveStreamingController().minimize.isMinimizing) {
+              /// when the application is minimized (in a minimized state),
+              /// disable button clicks to prevent multiple PrebuiltLiveStreaming components from being created.
+              return;
+            }
+
+            jumpToLivePage(
+              context,
+              liveID: controller,
+              isHost: isHost,
+            );
+          },
+        ),
+      ),
+    ),
                     SizedBox(height: 20.0),
                     Text(
                       'Topic of the Debate: $title',
@@ -230,22 +293,6 @@ class _DebateDetailsPageState extends State<DebateDetailsPage> {
                     ),
                     SizedBox(height: 10.0),
                     Text(summary),
-                    ElevatedButton(
-      child: Text(isHost ? 'Start' : 'Join'),
-      onPressed: () {
-        if (ZegoUIKitPrebuiltLiveStreamingController().minimize.isMinimizing) {
-          /// when the application is minimized (in a minimized state),
-          /// disable button clicks to prevent multiple PrebuiltLiveStreaming components from being created.
-          return;
-        }
-
-        jumpToLivePage(
-          context,
-          liveID: controller,
-          isHost: isHost,
-        );
-      },
-    ),
                   ],
                 ),
               );
