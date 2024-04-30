@@ -27,7 +27,7 @@ class Activity extends StatelessWidget {
           child: Text('click'),
           
           onPressed: () {
-            // scheduleDebateNotification();
+            sendEmailNotification();
             print("");
             print("noti button clicked");
           },

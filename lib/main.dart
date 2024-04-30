@@ -19,6 +19,7 @@ Future main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MyApp());
+  Timer.periodic(Duration(minutes: 10), (Timer t) => sendEmailNotification());
 }
 
 class MyApp extends StatelessWidget {

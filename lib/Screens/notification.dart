@@ -1,3 +1,121 @@
+  // String username = 'nexodeb8@gmail.com';
+  // String password = 'cqab sdlc rohe nulz';
+// /*
+//bing - v1
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
+
+Future<void> sendEmailNotification() async {
+  String username = 'nexodeb8@gmail.com';
+  String password = 'cqab sdlc rohe nulz';
+
+  final smtpServer = gmail(username, password);
+  print("send noti called");
+  
+  // Fetch the debates from Firestore
+  final debates = await FirebaseFirestore.instance.collection('debates').get();
+
+  for (var debate in debates.docs) {
+    // Get the scheduledDateTime and userId from the debate
+    DateTime scheduledDateTime = debate.data()['scheduledDateTime'].toDate();
+    String userId = debate.data()['userId'];
+
+    // Calculate the time difference between now and the scheduledDateTime
+    final difference = scheduledDateTime.difference(DateTime.now()).inMinutes;
+
+    // If the debate is scheduled in the next 5 minutes
+    if (difference <= 5) {
+  // Check if an email has already been sent for this debate
+  if (!debate.data()['emailSent']) {
+    // Fetch the user's email from Firestore
+    var userData = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    if (userData.exists) {
+      final userEmail = userData.data()?['email'];
+
+      // Create the email message
+      final message = Message()
+        ..from = Address(username, 'nexo')
+        ..recipients.add(userEmail)
+        ..subject = 'Debate Notification :: ${DateTime.now()}'
+        ..text = 'Your debate is scheduled to start in 5 minutes.';
+
+      // Try to send the email
+      try {
+        final sendReport = await send(message, smtpServer);
+        print('Message sent: ' + sendReport.toString());
+
+        // Mark the email as sent in Firestore
+        await FirebaseFirestore.instance.collection('debates').doc(debate.id).update({'emailSent': true});
+      } on MailerException catch (e) {
+        print('Message not sent.');
+        print(e);
+      }
+    } else {
+      print('User data not found for user: $userId');
+    }
+  }
+}
+
+  
+  //send multiple mail
+   /* if (difference <= 11) {
+      // Fetch the user's email from Firestore
+      var userData = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      if (userData.exists) {
+        final userEmail = userData.data()?['email'];
+
+        // Create the email message
+        final message = Message()
+          ..from = Address(username, 'nexo')
+          ..recipients.add(userEmail)
+          ..subject = 'Debate Notification :: ${DateTime.now()}'
+          ..text = 'Your debate is scheduled to start in 5 minutes.  ${debate.data()['title']}';
+
+        // Try to send the email
+        try {
+          final sendReport = await send(message, smtpServer);
+          print('Message sent: ' + sendReport.toString());
+        } on MailerException catch (e) {
+          print('Message not sent.');
+          print(e);
+        }
+      } else {
+        print('User data not found for user: $userId');
+      }
+    }*/
+  }
+}
+
+
+
+// /=============all working --- simple email send
+// import 'package:mailer/mailer.dart';
+// import 'package:mailer/smtp_server.dart';
+
+// Future<void> sendEmailNotification() async {
+//   String username = 'ds@gmail.com';
+//   String password = 'cqab weja rohe skfs';
+
+//   final smtpServer = gmail(username, password);
+//   final message = Message()
+//     ..from = Address(username, 'nexo')
+//     ..recipients.add('developingdeveloper0@gmail.com')
+//     ..subject = 'Notification :: ${DateTime.now()}'
+//     ..text = 'This is a notification from your Flutter app.';
+
+//   try {
+//     final sendReport = await send(message, smtpServer);
+//     print('Message sent: ' + sendReport.toString());
+//   } on MailerException catch (e) {
+//     print('Message not sent.');
+//     print(e);
+//   }
+// }
+
+
+//////////---  above on 1st--------------------
 /*import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mailer/mailer.dart';

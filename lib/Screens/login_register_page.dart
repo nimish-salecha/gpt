@@ -108,21 +108,80 @@ print(querySnapshot.docs[0].data()['email']);
   }
   
 
-
-  
-  Future<void> createUserWithEmailAndPassword() async {
-    try {
-      await Auth().createUserWithEmailAndPassword(
-        email: _controllerEmail.text,
-        password: _controllerPassword.text,
-        username: _usernameController.text,
-      );
-    } on FirebaseAuthException catch (e) {
+//this code is used to store email also at users collection
+Future<void> createUserWithEmailAndPassword() async {
+  try {
+    // Check if the username already exists
+    bool isUsernameTaken = await isUsernameAlreadyTaken(_usernameController.text);
+    if (isUsernameTaken) {
       setState(() {
-        errorMessage = e.message;
+        errorMessage = 'Username already taken';
       });
+      return;
     }
+    
+    // Create user in Firebase Authentication
+    UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: _controllerEmail.text,
+      password: _controllerPassword.text,
+    );
+    
+    // Get the user's ID from Firebase Authentication
+    String userId = userCredential.user!.uid;
+
+    // Store user email in Firestore users collection
+    await _firestore.collection('users').doc(userId).set({
+      'email': _controllerEmail.text,
+      'username': _usernameController.text,
+      // Add other user details as needed
+    });
+
+    // If successful, clear error message and navigate to home page
+    setState(() {
+      errorMessage = '';
+    });
+    // Navigate to home page or any other page
+    // Get.offAll(HomePage());
+  } on FirebaseAuthException catch (e) {
+    setState(() {
+      errorMessage = e.message;
+    });
   }
+}
+
+Future<bool> isUsernameAlreadyTaken(String username) async {
+  try {
+    // Query Firestore to check if the username exists
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+        .collection('users')
+        .where('username', isEqualTo: username)
+        .limit(1)
+        .get();
+    // Return true if username is already taken, false otherwise
+    return querySnapshot.docs.isNotEmpty;
+  } catch (e) {
+    // Handle any errors
+    print('Error checking username: $e');
+    return true; // Assume username is taken to prevent duplicate usernames
+  }
+}
+
+
+
+//this code is correct and working  
+  // Future<void> createUserWithEmailAndPassword() async {
+  //   try {
+  //     await Auth().createUserWithEmailAndPassword(
+  //       email: _controllerEmail.text,
+  //       password: _controllerPassword.text,
+  //       username: _usernameController.text,
+  //     );
+  //   } on FirebaseAuthException catch (e) {
+  //     setState(() {
+  //       errorMessage = e.message;
+  //     });
+  //   }
+  // }
 
   Widget _header(BuildContext context) {
     return Column(
