@@ -60,6 +60,12 @@ dependencies:
   zego_uikit_signaling_plugin: ^2.7.6
   cached_network_image: ^3.3.1
 
+  flutter_local_notifications: ^17.1.0
+  # flutter_local_notifications: ^9.1.5
+  mailer: ^6.1.0
+  timezone: ^0.9.0
+  flutter_email_sender: ^6.0.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

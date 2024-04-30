@@ -1,10 +1,8 @@
-still the search is not perfect, will the use of algolia make it perfect and how does algolia helps
- notifications, notifications, 
- dashboard (withot restart -- debates list not changis even if new user logged n), ]logo, 
-]viewer join without code, 
-web
+still the search is not 100% perfect, will the use of algolia make it perfect and how does algolia helps
+ notifications, 
+ dashboard (withot restart -- debates list not changis even if new user logged n), 
+ ]logo, 
 Summary
-[participants list at time of debate creation],
 recommendation category, keywords
 
 
@@ -13,36 +11,21 @@ Color.fromARGB(255, 56, 134, 206)
 Color.fromARGB(255, 254, 99, 61)
 Colors.purple.withOpacity(0.1)
 
-Note:   tab bar or only meny bar (improve ui/ux)
-
+>>>no need of +, notification page
 >>>create responsive to mobile and web
 >>>all things must work on web+ (ios)
 
->when new user registen username is showing null [menu and dashboard]
-]>feed main when load bkg = white @ debate card area
 
->hiya search bar  (not working properly)
- ]   add serbox
 
 >Predebate
-    ]cancle and modify debate 
-    ]user can't join before and after shedule time
-    Co-host list at sheduling (So they dont need code to join)
-    (Block user)
+    disable modification in past debates
+    user can't join before and after shedule time
     reminder for debates --in app /mail/ phone top
-    ]Thumbnail upload
-        (Show on all debate card and debate_detail page)
-    ]public & private (reflect in other locations)
+    (Block user)
+    
 
->Feedmain
-    Trending debate algo
-  ]  under category section debates are not comming
     
 >Login  
-    ]Forget Password
-    ]cleare textfeitd when switch b/w login <--> register
-    ]confirm Password feild at registration
-
     (error msg)
     (can login with uname)
 
@@ -50,14 +33,17 @@ Note:   tab bar or only meny bar (improve ui/ux)
 
 >Edit_profile 
     Gender DropDown menu
-    ]when saved automaticall get back to dashboard
 
 >Settings
-    ]in change pass - confirm old and new pass
-    ]add forget Password
+   in change pass - some err and wrong pop when pass change..
+   
     Disabled account can be enabled
     After deleting account Navigate directly to loging page (no go back back)
     
+
+>Feedmain
+    Trending debate algo
+
 ------after all this develop algo for 
                                     Summary generation
                                     Win/lost debate

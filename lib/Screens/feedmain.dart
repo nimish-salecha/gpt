@@ -105,108 +105,111 @@ class _FeedMain extends State<FeedMain> {
           ),
         ),
         body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Trending Debates',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                Container(
-                  height: 200,
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: _firestore.collection('debates').snapshots(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                      final debates = snapshot.data!.docs;
-                      // Limit the number of cards shown in the trending debates column to 4
-                      final trendingDebates = debates.take(5).toList();
-                      return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: trendingDebates.length,
-                        itemBuilder: (context, index) {
-                          final debate = trendingDebates[index];
-                          final debateTopic = debate['title'];
-                          final debateHost =
-                              debate['userId']; // Fetching host ID
-                          // final debateHost = _auth.currentUser?.displayName ??
-                          //     'Unknown'; // Assuming displayName is the host
-                          final debateId = debate.id; // Fetching debate ID
-
-                          return _buildTrendingDebateCard(
-                              debateTopic, debate['description'], debateHost, debateId);
-                        },
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'Featured Topics',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                // Featured topics
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildTopicChip('Politics'),
-                      _buildTopicChip('Religious'),
-                      _buildTopicChip('Science and Technology'),
-                      _buildTopicChip('Social Issues'),
-                      _buildTopicChip('Entertainment'),
-                      _buildTopicChip('Environment'),
-                      _buildTopicChip('Education'),
-                      _buildTopicChip('Health and Wellness'),
-                      _buildTopicChip('Sports'),
-                      _buildTopicChip('Business and Economy'),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-                // Debates by selected topic
-                if (selectedTopic != null) ...[
+          child: Container(
+            color: Color.fromARGB(255, 32, 32, 70),
+            child: Padding(
+              padding: EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    'Debates on $selectedTopic',
+                    'Trending Debates',
+                    style: TextStyle( color: Colors.white,fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10),
+                  Container(
+                    height: 200,
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: _firestore.collection('debates').snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        final debates = snapshot.data!.docs;
+                        // Limit the number of cards shown in the trending debates column to 4
+                        final trendingDebates = debates.take(5).toList();
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: trendingDebates.length,
+                          itemBuilder: (context, index) {
+                            final debate = trendingDebates[index];
+                            final debateTopic = debate['title'];
+                            final debateHost =
+                                debate['userId']; // Fetching host ID
+                            // final debateHost = _auth.currentUser?.displayName ??
+                            //     'Unknown'; // Assuming displayName is the host
+                            final debateId = debate.id; // Fetching debate ID
+            
+                            return _buildTrendingDebateCard(
+                                debateTopic, debate['description'], debateHost, debateId);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Featured Topics',
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10),
-                  // StreamBuilder to fetch and display debates based on selected topic
-                  StreamBuilder<QuerySnapshot>(
-                    stream: _firestore
-                        .collection('debates')
-                        .where('category', isEqualTo: selectedTopic)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final debates = snapshot.data!.docs;
-                        return Column(
-                          children: debates.map<Widget>((debate) {
-                            // Build debate card widget here
-                            return Column(
-                              children: [
-                                _buildDebateCard(context,
-                                    debate['title'], debate['description'], debate['userId'], debate.id),
-                                SizedBox(height: 20),
-                              ],
-                            );
-                          }).toList(),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      } else {
-                        return CircularProgressIndicator();
-                      }
-                    },
+                  // Featured topics
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _buildTopicChip('Politics'),
+                        _buildTopicChip('Religious'),
+                        _buildTopicChip('Science and Technology'),
+                        _buildTopicChip('Social Issues'),
+                        _buildTopicChip('Entertainment'),
+                        _buildTopicChip('Environment'),
+                        _buildTopicChip('Education'),
+                        _buildTopicChip('Health and Wellness'),
+                        _buildTopicChip('Sports'),
+                        _buildTopicChip('Business and Economy'),
+                      ],
+                    ),
                   ),
+                  SizedBox(height: 20),
+                  // Debates by selected topic
+                  if (selectedTopic != null) ...[
+                    Text(
+                      'Debates on $selectedTopic',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 10),
+                    // StreamBuilder to fetch and display debates based on selected topic
+                    StreamBuilder<QuerySnapshot>(
+                      stream: _firestore
+                          .collection('debates')
+                          .where('category', isEqualTo: selectedTopic)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final debates = snapshot.data!.docs;
+                          return Column(
+                            children: debates.map<Widget>((debate) {
+                              // Build debate card widget here
+                              return Column(
+                                children: [
+                                  _buildDebateCard(context,
+                                      debate['title'], debate['description'], debate['userId'], debate.id),
+                                  SizedBox(height: 20),
+                                ],
+                              );
+                            }).toList(),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          return CircularProgressIndicator();
+                        }
+                      },
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ),
@@ -225,40 +228,84 @@ class _FeedMain extends State<FeedMain> {
       },
       child: Card(
         elevation: 3,
-        color: Color.fromARGB(197, 244, 178, 92),
+        color: Color.fromARGB(255, 113, 92, 71),
         margin: EdgeInsets.only(right: 10),
-        child: Container(
-          width: 200, // Set the width of the card
-          child: Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  topic,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 5),
-                FutureBuilder(
-                  future: _getUserName(host), // Fetch host name asynchronously
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Text('Hosted by: Loading...');
-                    } else if (snapshot.hasData) {
-                      return Text('Hosted by ${snapshot.data}');
-                    } else {
-                      return Text('');
-                    }
-                  },
-                ),
-                SizedBox(height: 5),
-                Text(desp),
-              ],
+        child: SingleChildScrollView(
+          child: Container(
+            width: 200, // Set the width of the card
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FutureBuilder<String?>(
+                      future: _getThumbnailUrl(debateId),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return Icon(Icons.error);
+                        } else {
+                          final thumbnailUrl = snapshot.data;
+                          return thumbnailUrl != null
+                              ? Image.network(
+                                  thumbnailUrl,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 150.0,
+                                )
+                              : Image.asset(
+                                  'assets/category/debate.png',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 150.0,
+                                );
+                        }
+                      },
+                    ),
+                  Text(
+                    topic,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  // SizedBox(height: 5),
+                  // FutureBuilder(
+                  //   future: _getUserName(host), // Fetch host name asynchronously
+                  //   builder: (context, snapshot) {
+                  //     if (snapshot.connectionState == ConnectionState.waiting) {
+                  //       return Text('Hosted by: Loading...');
+                  //     } else if (snapshot.hasData) {
+                  //       return Text('Hosted by ${snapshot.data}');
+                  //     } else {
+                  //       return Text('');
+                  //     }
+                  //   },
+                  // ),
+                  // SizedBox(height: 5),
+                  // Text(desp),
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
+  }
+  Future<String?> _getThumbnailUrl(String debateId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('debates')
+          .doc(debateId)
+          .get();
+      final data = snapshot.data();
+      if (data != null && data.containsKey('_thumbnailUrl')) {
+        return data['_thumbnailUrl'] as String?;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching thumbnail URL: $e');
+      return null;
+    }
   }
 
   Widget _buildTopicChip(String topic) {

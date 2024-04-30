@@ -1,5 +1,7 @@
 // ignore_for_file: sort_child_properties_last
 
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -9,6 +11,7 @@ import 'package:gpt/Services/AuthenticationService.dart';
 import 'package:gpt/screens/dashboard.dart';
 import 'package:gpt/screens/home.dart';
 import 'package:gpt/screens/login_register_page.dart';
+import 'package:gpt/screens/notification.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,6 +51,26 @@ class WidgetTree extends StatefulWidget {
 }
 
 class _WidgetTreeState extends State<WidgetTree> {
+
+//code for email notification till line 70-71
+  late Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Call the function every 1 minute
+    _timer = Timer.periodic(Duration(minutes: 1), (timer) {
+      checkDebatesToSendReminder();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel(); // Cancel the timer to prevent memory leaks
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
