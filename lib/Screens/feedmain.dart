@@ -106,7 +106,7 @@ class _FeedMain extends State<FeedMain> {
         ),
         body: SingleChildScrollView(
           child: Container(
-            color: Color.fromARGB(255, 32, 32, 70),
+            color: Color.fromARGB(197, 32, 32, 70),
             child: Padding(
               padding: EdgeInsets.all(20.0),
               child: Column(
@@ -114,7 +114,7 @@ class _FeedMain extends State<FeedMain> {
                 children: [
                   Text(
                     'Trending Debates',
-                    style: TextStyle( color: Colors.white,fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle( color: Colors.black,fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10),
                   Container(
@@ -150,7 +150,7 @@ class _FeedMain extends State<FeedMain> {
                   SizedBox(height: 20),
                   Text(
                     'Featured Topics',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.black,fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10),
                   // Featured topics
@@ -176,7 +176,7 @@ class _FeedMain extends State<FeedMain> {
                   if (selectedTopic != null) ...[
                     Text(
                       'Debates on $selectedTopic',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Colors.black,fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10),
                     // StreamBuilder to fetch and display debates based on selected topic
@@ -227,8 +227,8 @@ class _FeedMain extends State<FeedMain> {
             ));
       },
       child: Card(
-        elevation: 3,
-        color: Color.fromARGB(255, 113, 92, 71),
+        elevation: 5,
+        color: Color.fromARGB(255, 32, 32, 70),
         margin: EdgeInsets.only(right: 10),
         child: SingleChildScrollView(
           child: Container(
@@ -252,20 +252,20 @@ class _FeedMain extends State<FeedMain> {
                                   thumbnailUrl,
                                   fit: BoxFit.cover,
                                   width: double.infinity,
-                                  height: 150.0,
+                                  height: 135.0,
                                 )
                               : Image.asset(
                                   'assets/category/debate.png',
                                   fit: BoxFit.cover,
                                   width: double.infinity,
-                                  height: 150.0,
+                                  height: 135.0,
                                 );
                         }
                       },
                     ),
                   Text(
                     topic,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   // SizedBox(height: 5),
                   // FutureBuilder(
@@ -317,7 +317,7 @@ class _FeedMain extends State<FeedMain> {
         },
         child: Chip(
           label: Text(topic),
-          backgroundColor: Colors.blue,
+          backgroundColor: Color.fromARGB(255, 56, 134, 206),
           labelStyle: TextStyle(color: Colors.white),
         ),
       ),
@@ -334,8 +334,8 @@ Widget _buildDebateCard(context,String topic,String desp, String host, String de
             ));
       },
   child: Card(
-  elevation: 3,
-  color: Color.fromARGB(197, 244, 178, 92),
+  elevation: 5,
+  color: Color.fromARGB(255, 32, 32, 70),
   margin: EdgeInsets.only(right: 10),
   child: Container(
     width: MediaQuery.of(context).size.width, // Set the width to the width of the device

@@ -53,22 +53,22 @@ class WidgetTree extends StatefulWidget {
 class _WidgetTreeState extends State<WidgetTree> {
 
 //code for email notification till line 70-71
-  late Timer _timer;
+  // late Timer _timer;
 
-  @override
-  void initState() {
-    super.initState();
-    // Call the function every 1 minute
-    _timer = Timer.periodic(Duration(minutes: 1), (timer) {
-      checkDebatesToSendReminder();
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Call the function every 1 minute
+  //   _timer = Timer.periodic(Duration(minutes: 1), (timer) {
+  //     checkDebatesToSendReminder();
+  //   });
+  // }
 
-  @override
-  void dispose() {
-    _timer.cancel(); // Cancel the timer to prevent memory leaks
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _timer.cancel(); // Cancel the timer to prevent memory leaks
+  //   super.dispose();
+  // }
 
 
   @override
