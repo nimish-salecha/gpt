@@ -16,7 +16,7 @@ class FeedMain extends StatefulWidget {
 class _FeedMain extends State<FeedMain> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  String? selectedTopic;
+  String selectedTopic = 'Politics';
   String? username;
 
   void fetchDebatesByTopic(String topic) {
@@ -58,6 +58,7 @@ class _FeedMain extends State<FeedMain> {
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
+          backgroundColor: Color.fromARGB(195, 32, 32, 70),
           title: Image.asset(
             'assets/nexo_logo.png',
             height: dheight * 0.5,
@@ -106,7 +107,7 @@ class _FeedMain extends State<FeedMain> {
         ),
         body: SingleChildScrollView(
           child: Container(
-            color: Color.fromARGB(197, 32, 32, 70),
+            color: Color.fromARGB(195, 32, 32, 70),
             child: Padding(
               padding: EdgeInsets.all(20.0),
               child: Column(
@@ -317,8 +318,8 @@ class _FeedMain extends State<FeedMain> {
         },
         child: Chip(
           label: Text(topic),
-          backgroundColor: Color.fromARGB(255, 56, 134, 206),
-          labelStyle: TextStyle(color: Colors.white),
+          backgroundColor: Colors.cyan[600],
+          labelStyle: TextStyle(color: const Color.fromARGB(255, 14, 5, 5)),
         ),
       ),
     );
@@ -346,7 +347,7 @@ Widget _buildDebateCard(context,String topic,String desp, String host, String de
         children: [
           Text(
             topic,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 5),
           // FutureBuilder(
@@ -360,7 +361,9 @@ Widget _buildDebateCard(context,String topic,String desp, String host, String de
           //   },
           // ),
           SizedBox(height: 5),
-                Text(desp),
+                Text(desp,
+                    style: TextStyle(color: Colors.white70),
+                  ),
 
         //join button
               // SizedBox(height: 5),

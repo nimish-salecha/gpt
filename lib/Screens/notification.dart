@@ -7,6 +7,10 @@ import 'dart:async';
 
 Future<void> checkDebatesToSendReminder() async {
   try {
+    tz.initializeTimeZones();
+  // Set the default time zone to India
+  tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
+
     // Get the current time
     final currentTime = tz.TZDateTime.now(tz.local);
 
