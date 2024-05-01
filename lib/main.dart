@@ -12,12 +12,34 @@ import 'package:gpt/screens/dashboard.dart';
 import 'package:gpt/screens/home.dart';
 import 'package:gpt/screens/login_register_page.dart';
 import 'package:gpt/screens/notification.dart';
+import 'package:flutter/foundation.dart';
+
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+        options: const FirebaseOptions(
+      apiKey: "AIzaSyAvE5vHVjdjeWrmPX5GCmZ4Z6yUosK9D_w",
+      authDomain: "gptt-6ae89.firebaseapp.com",
+      databaseURL:
+          "https://gptt-6ae89-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "gptt-6ae89",
+      storageBucket: "gptt-6ae89.appspot.com",
+      messagingSenderId: "179804533123",
+      appId: "1:179804533123:web:8fbbe5390230ad98c4c6b6",
+      measurementId: "G-9VYGYRXL6E",
+    ));
+  } else {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
+// Future main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await Firebase.initializeApp(
+//     options: DefaultFirebaseOptions.currentPlatform,
+//   );
   runApp(const MyApp());
   Timer.periodic(Duration(minutes: 1000), (Timer t) => sendEmailNotification());
 }

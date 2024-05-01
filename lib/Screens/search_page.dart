@@ -50,6 +50,133 @@ class _DebateSearchPageState extends State<DebateSearchPage> {
         child: Text('No results found'),
       );
     } else {
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth > 800) {
+            // On larger screens (web), show 4 debate cards in a row
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: _searchResults.length,
+              itemBuilder: (context, index) {
+                final debate = _searchResults[index];
+                return _buildDebateCard(debate);
+              },
+            );
+          } else {
+            // On smaller screens (mobile), show 2 debate cards in a row
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: _searchResults.length,
+              itemBuilder: (context, index) {
+                final debate = _searchResults[index];
+                return _buildDebateCard(debate);
+              },
+            );
+          }
+        },
+      );
+    }
+  }
+
+  Widget _buildDebateCard(DocumentSnapshot debate) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DebateDetailsPage(
+              debateId: debate.id,
+              dtitle: '',
+            ),
+          ),
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.0),
+          color: Colors.grey[200],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FutureBuilder<String?>(
+              future: _getThumbnailUrl(debate.id),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Icon(Icons.error);
+                } else {
+                  final thumbnailUrl = snapshot.data;
+                  return thumbnailUrl != null
+                      ? Image.network(
+                          thumbnailUrl,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: 150.0,
+                        )
+                      : Image.asset(
+                          'assets/category/debate.png',
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: 150.0,
+                        );
+                }
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    debate['title'] ?? '',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4.0),
+                  FutureBuilder(
+                    future: _getUserName(debate['userId']),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Text('Host: Loading...');
+                      } else if (snapshot.hasData) {
+                        return Text('Host: ${snapshot.data}');
+                      } else {
+                        return Text('Host: Unknown');
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+
+/*  old only for mobile not for web
+  Widget _buildSearchResults() {
+    if (_searchResults.isEmpty) {
+      return Center(
+        child: Text('No results found'),
+      );
+    } else {
+  // 
       return GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
@@ -140,7 +267,7 @@ class _DebateSearchPageState extends State<DebateSearchPage> {
         },
       );
     }
-  }
+  }*/
 
   Future<String?> _getThumbnailUrl(String debateId) async {
     try {

@@ -338,21 +338,52 @@ Future<bool> isUsernameAlreadyTaken(String username) async {
             width: dwidth * 0.5,
           ),
         ),
-      body: SingleChildScrollView(
+         body: Center(
         child: Container(
           padding: EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              _header(context),
-              _inputField(context),
-              _errorMessage(),
-              _loginOrRegisterButton(),
-            ],
+          // decoration: BoxDecoration(
+          //   border: Border.all(
+          //     color: Colors.purple,
+          //     width: 2.0,
+          //   ),
+          //   borderRadius: BorderRadius.circular(20),
+          // ),
+          constraints: BoxConstraints(maxWidth: 400),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                _header(context),
+                SizedBox(height: 20),
+                _inputField(context),
+                SizedBox(height: 20),
+                _errorMessage(),
+                SizedBox(height: 20),
+                _loginOrRegisterButton(),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 }
+
+//       body: SingleChildScrollView(
+//         child: Container(
+//           padding: EdgeInsets.all(20),
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.center,
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: <Widget>[
+//               _header(context),
+//               _inputField(context),
+//               _errorMessage(),
+//               _loginOrRegisterButton(),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

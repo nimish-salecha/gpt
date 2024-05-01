@@ -9,6 +9,10 @@ import 'package:gpt/screens/about_us.dart';
 import 'package:gpt/screens/dashboard.dart';
 import 'package:gpt/screens/setting_page.dart';
 import 'package:gpt/screens/debate_details.dart'; // Import the debate details page
+//
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+
+
 
 class FeedMain extends StatefulWidget {
   _FeedMain createState() => _FeedMain();
@@ -76,17 +80,35 @@ Future<void> signOut(BuildContext context) async {
   Widget build(BuildContext context) {
     final dwidth = MediaQuery.of(context).size.width;
     final dheight = MediaQuery.of(context).size.height;
+  // 
+ final isDesktop = dwidth >   800; 
+
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
           backgroundColor: Color.fromARGB(195, 32, 32, 70),
-          title: Image.asset(
-            'assets/nexo_logo.png',
-            height: dheight * 0.5,
-            width: dwidth * 0.5,
-          ),
+          title:isDesktop
+              ? SizedBox(
+                  // Center the logo if on desktop
+                  width: dwidth * 0.5,
+                  child: Image.asset(
+                    'assets/nexo_logo.png',
+                    height: dheight * 0.05, // Reduce logo size for desktop
+                    width: dwidth * 0.5,
+                  ),
+                )
+              : Image.asset(
+                  'assets/nexo_logo.png',
+                  height: dheight * 0.05, // Keep original logo size for mobile
+                ),
         ),
+          //  Image.asset(
+          //   'assets/nexo_logo.png',
+          //   height: dheight * 0.5,
+          //   width: dwidth * 0.5,
+          // ),
+        // ),
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
@@ -162,9 +184,25 @@ Future<void> signOut(BuildContext context) async {
                             // final debateHost = _auth.currentUser?.displayName ??
                             //     'Unknown'; // Assuming displayName is the host
                             final debateId = debate.id; // Fetching debate ID
-            
-                            return _buildTrendingDebateCard(
-                                debateTopic, debate['description'], debateHost, debateId);
+
+                            return AnimationConfiguration.staggeredList(
+                              position: index,
+                              duration: const Duration(milliseconds: 375),
+                              child: SlideAnimation(
+                                verticalOffset: 50.0,
+                                child: FadeInAnimation(
+                                  child: _buildTrendingDebateCard(
+                                      debateTopic,
+                                      debate['description'],
+                                      debateHost,
+                                      debateId),
+                                ),
+                              ),
+                            );
+           
+            //
+                            // return _buildTrendingDebateCard(
+                            //     debateTopic, debate['description'], debateHost, debateId);
                           },
                         );
                       },
