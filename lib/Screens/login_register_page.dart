@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:gpt/Services/AuthenticationService.dart';
+import 'package:gpt/screens/dashboard.dart';
 import 'package:gpt/screens/setting_pages/forget_password.dart';
 
 class LoginPage extends StatefulWidget {
@@ -51,6 +52,10 @@ Future<void> signInWithEmailAndPassword() async {
         });
       }
     }
+//this line is to refresh user after new login
+  // Get.find<DashboardController>().fetchUserData();
+
+
   } on FirebaseAuthException catch (e) {
     setState(() {
       errorMessage = e.message;

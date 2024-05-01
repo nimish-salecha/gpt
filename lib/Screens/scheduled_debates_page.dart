@@ -1,5 +1,96 @@
-// updated hiya 1stmay 4am
+//updated -- single loading indicator
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gpt/screens/predebate.dart';
+import 'package:gpt/widgets/debate_card.dart';
 
+class ScheduledDebatesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Scheduled Debates'),
+      ),
+      body: ScheduledDebatesList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PreDebate()),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+class ScheduledDebatesList extends StatelessWidget {
+  final User? user = FirebaseAuth.instance.currentUser;
+
+  Future<List<Map<String, dynamic>>> fetchDebatesAndHosts() async {
+    final List<QueryDocumentSnapshot> debates = await FirebaseFirestore.instance
+        .collection('debates')
+        .where('userId', isEqualTo: user!.uid) // Filter debates by user ID
+        .get()
+        .then((snapshot) => snapshot.docs);
+    List<Map<String, dynamic>> debatesAndHosts = [];
+
+    for (var debate in debates) {
+      final userData = await FirebaseFirestore.instance.collection('users').doc(debate['userId']).get();
+      debatesAndHosts.add({
+        'debate': debate,
+        'hostName': userData['username'] ?? 'Unknown',
+      });
+    }
+
+    return debatesAndHosts;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: fetchDebatesAndHosts(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), // Change the color to blue
+              strokeWidth: 5.0, 
+            ),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        }
+
+        final debatesAndHosts = snapshot.data!;
+
+        return ListView.builder(
+          itemCount: debatesAndHosts.length,
+          itemBuilder: (context, index) {
+            final debate = debatesAndHosts[index]['debate'];
+            final hostName = debatesAndHosts[index]['hostName'];
+
+            return DebateCard(
+              debate: debate,
+              hostName: hostName,
+              onDelete: () {
+                // Widget.onDelete();
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+
+/*// updated hiya 1stmay 4am
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -46,7 +137,10 @@ class ScheduledDebatesList extends StatelessWidget {
 
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), // Change the color to blue
+                      strokeWidth: 5.0, // Change the stroke width to 5.0
+                    )
           );
         }
 
@@ -63,7 +157,10 @@ class ScheduledDebatesList extends StatelessWidget {
                   .get(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
+                  return const CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), // Change the color to blue
+                            strokeWidth: 5.0, // Change the stroke width to 5.0
+                          );
                 }
 
                 final userData = snapshot.data!;
@@ -84,7 +181,7 @@ class ScheduledDebatesList extends StatelessWidget {
     );
   }
 }
-
+*/
 
 
 /*  working
@@ -176,7 +273,7 @@ class ScheduledDebatesList extends StatelessWidget {
 
 
 
-//========code for debate cards================
+//========code for debate cards(made new file in widgits)================
 /*
 class DebateCard extends StatefulWidget {
   final QueryDocumentSnapshot debate;
@@ -345,4 +442,3 @@ class _DebateCardState extends State<DebateCard> {
     }
   }
 }*/
-

@@ -1,8 +1,9 @@
 // edit , update user profile
 
-//hiya updated 1st may 4am
-// edit , update user profile
-//v2
+//hiya updated 1st may 2pm
+
+//v3
+/*
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -274,25 +275,40 @@ class _EditProfileState extends State<EditProfile> {
               ),
             ),
             SizedBox(height: 20),
-            DropdownButtonFormField<String>(
-              value: _gender,
-              onChanged: (value) {
-                setState(() {
-                  _gender = value;
-                });
-              },
-              decoration: InputDecoration(
-                labelText: 'Gender',
-                fillColor: Colors.grey[200],
-                filled: true,
-              ),
-              items: ['Male', 'Female', 'Other']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
+            Row(
+              children: [
+                Text('Gender: '),
+                Radio<String>(
+                  value: 'Male',
+                  groupValue: _gender,
+                  onChanged: (value) {
+                    setState(() {
+                      _gender = value;
+                    });
+                  },
+                ),
+                Text('Male'),
+                Radio<String>(
+                  value: 'Female',
+                  groupValue: _gender,
+                  onChanged: (value) {
+                    setState(() {
+                      _gender = value;
+                    });
+                  },
+                ),
+                Text('Female'),
+                Radio<String>(
+                  value: 'Other',
+                  groupValue: _gender,
+                  onChanged: (value) {
+                    setState(() {
+                      _gender = value;
+                    });
+                  },
+                ),
+                Text('Other'),
+              ],
             ),
             TextFormField(
               keyboardType: TextInputType.number,
@@ -314,11 +330,11 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 }
+*/
 
 
 
-
-/* working
+// /* working
 //v2
 import 'dart:io';
 
@@ -573,6 +589,43 @@ class _EditProfileState extends State<EditProfile> {
                 filled: true,
               ),
             ),
+//added later gender
+            SizedBox(height: 20),
+            Row(
+              children: [
+                Text('Gender: '),
+                Radio<String>(
+                  value: 'Male',
+                  groupValue: _gender,
+                  onChanged: (value) {
+                    setState(() {
+                      _gender = value;
+                    });
+                  },
+                ),
+                Text('Male'),
+                Radio<String>(
+                  value: 'Female',
+                  groupValue: _gender,
+                  onChanged: (value) {
+                    setState(() {
+                      _gender = value;
+                    });
+                  },
+                ),
+                Text('Female'),
+                Radio<String>(
+                  value: 'Other',
+                  groupValue: _gender,
+                  onChanged: (value) {
+                    setState(() {
+                      _gender = value;
+                    });
+                  },
+                ),
+                Text('Other'),
+              ],
+            ),
             SizedBox(height: 20),
             TextFormField(
               keyboardType: TextInputType.number,
@@ -594,7 +647,7 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 }
-*/
+// */
 
 ///================================================================================
 //gpt  v1 updated  -- error occured later of _uploadImage solved in V2

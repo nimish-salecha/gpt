@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:gpt/Services/AuthenticationService.dart';
 import 'package:gpt/screens/about_us.dart';
+import 'package:gpt/screens/dashboard.dart';
 import 'package:gpt/screens/setting_page.dart';
 import 'package:gpt/screens/debate_details.dart'; // Import the debate details page
 
@@ -44,9 +45,30 @@ class _FeedMain extends State<FeedMain> {
     }
   }
 
-  Future<void> signOut() async {
-    await Auth().signOut();
+
+// sign out code that Clear User-Specific Data on Logout:
+Future<void> signOut(BuildContext context) async {
+  try {
+    await FirebaseAuth.instance.signOut();
+    // Clear user-specific data
+    setState(() {
+      currentUser = null;
+      currentUserId = '';
+      username = null;
+      // _profilePicUrl = null;
+    });
+    // Navigate to the login screen or any other screen as needed
+    Navigator.pushReplacementNamed(context, '/login');
+  } catch (e) {
+    print('Error signing out: $e');
   }
+}
+
+
+//working just to sign out
+  // Future<void> signOut() async {
+  //   await Auth().signOut();
+  // }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -99,7 +121,7 @@ class _FeedMain extends State<FeedMain> {
                 leading: Icon(Icons.logout_sharp),
                 title: Text('Log Out'),
                 onTap: () {
-                  signOut();
+                  signOut(context);
                 },
               ),
             ],

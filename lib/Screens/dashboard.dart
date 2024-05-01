@@ -2,8 +2,9 @@
 
 // ignore_for_file: prefer_const_constructors
 
-//v1 code to merge with hiya code
 // v1 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:gpt/screens/debate_details.dart';
@@ -24,20 +25,50 @@ class Dashboard extends StatefulWidget {
   // Get the current user's ID
   String currentUserId = currentUser?.uid ?? '';
   
+  
 
 class _DashboardState extends State<Dashboard> {
   // final FirebaseAuth _auth = FirebaseAuth.instance;
   // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+
+
   int _selectedIndex = 2;
   String? username;
   String? _profilePicUrl;
 
-  @override
-  void initState() {
-    fetchFromUsers();
-    super.initState();
+//code to refrst new logged in user  -- after onle user is log out
+void _updateUserData(User? user) {
+  if (user != null) {
+    setState(() {
+      currentUser = user;
+      currentUserId = user.uid;
+    });
+    fetchFromUsers(); // Refresh user-specific data
   }
+}
+
+StreamSubscription<User?>? _authStateSubscription;
+
+@override
+void initState() {
+  _authStateSubscription = _auth.authStateChanges().listen(_updateUserData);
+  super.initState();
+  fetchFromUsers();
+}
+
+@override
+void dispose() {
+  _authStateSubscription?.cancel();
+  super.dispose();
+}
+
+//------------
+  // @override
+  // void initState() {
+  //   fetchFromUsers();
+  //   super.initState();
+  // }
 
   Future<void> fetchFromUsers() async {
     final User? user = _auth.currentUser;
