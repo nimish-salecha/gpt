@@ -1,3 +1,93 @@
+// updated hiya 1stmay 4am
+
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gpt/screens/predebate.dart';
+import 'package:gpt/widgets/debate_card.dart';
+
+class ScheduledDebatesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Scheduled Debates'),
+      ),
+      body: ScheduledDebatesList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => PreDebate()),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class ScheduledDebatesList extends StatelessWidget {
+  final User? user = FirebaseAuth.instance.currentUser;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('debates')
+          .where('userId', isEqualTo: user!.uid) // Filter debates by user ID
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Error: ${snapshot.error}'),
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        final List<QueryDocumentSnapshot> debates = snapshot.data!.docs;
+
+        return ListView.builder(
+          itemCount: debates.length,
+          itemBuilder: (context, index) {
+            final debate = debates[index];
+            return FutureBuilder<DocumentSnapshot>(
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(debate['userId'])
+                  .get(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                }
+
+                final userData = snapshot.data!;
+                final hostName = userData['username'] ?? 'Unknown';
+                // final joincode =
+                return DebateCard(
+                  debate: debate,
+                  hostName: hostName,
+                  onDelete: () {
+                    // Widget.onDelete();
+                  },
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+
+
+/*  working
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -82,6 +172,9 @@ class ScheduledDebatesList extends StatelessWidget {
     );
   }
 }
+*/
+
+
 
 //========code for debate cards================
 /*
