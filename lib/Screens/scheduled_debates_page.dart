@@ -1,4 +1,5 @@
-//updated -- single loading indicator
+
+// /*    all working  except refresh on debate delete
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,27 +26,61 @@ class ScheduledDebatesPage extends StatelessWidget {
     );
   }
 }
+
 class ScheduledDebatesList extends StatelessWidget {
+Future<List<Map<String, dynamic>>> fetchDebatesAndHosts() async {
+
   final User? user = FirebaseAuth.instance.currentUser;
+ 
+  final List<QueryDocumentSnapshot> debates = await FirebaseFirestore.instance
+      .collection('debates')
+      .where('userId', isEqualTo: user!.uid) // Filter debates by user ID
+      .get()
+      .then((snapshot) => snapshot.docs);
+  List<Map<String, dynamic>> debatesAndHosts = [];
 
-  Future<List<Map<String, dynamic>>> fetchDebatesAndHosts() async {
-    final List<QueryDocumentSnapshot> debates = await FirebaseFirestore.instance
-        .collection('debates')
-        .where('userId', isEqualTo: user!.uid) // Filter debates by user ID
-        .get()
-        .then((snapshot) => snapshot.docs);
-    List<Map<String, dynamic>> debatesAndHosts = [];
-
-    for (var debate in debates) {
+  for (var debate in debates) {
+    
+    final scheduledDateTime = (debate['scheduledDateTime'] as Timestamp).toDate();
+    
+    final currentTimeLess20min = DateTime.now().subtract(Duration(minutes: 20));
+//to remove past debate(more than 1hrs past)
+    // Check if the scheduledDateTime is greater than the current time minus one hour
+    if (scheduledDateTime.isAfter(currentTimeLess20min)) {
+      // Fetch user data for the debate's host
       final userData = await FirebaseFirestore.instance.collection('users').doc(debate['userId']).get();
       debatesAndHosts.add({
         'debate': debate,
         'hostName': userData['username'] ?? 'Unknown',
       });
     }
-
-    return debatesAndHosts;
   }
+
+  return debatesAndHosts;
+}
+
+//fetching all debates(including past+1hrs debate)
+// class ScheduledDebatesList extends StatelessWidget {
+//   final User? user = FirebaseAuth.instance.currentUser;
+
+//   Future<List<Map<String, dynamic>>> fetchDebatesAndHosts() async {
+//     final List<QueryDocumentSnapshot> debates = await FirebaseFirestore.instance
+//         .collection('debates')
+//         .where('userId', isEqualTo: user!.uid) // Filter debates by user ID
+//         .get()
+//         .then((snapshot) => snapshot.docs);
+//     List<Map<String, dynamic>> debatesAndHosts = [];
+
+//     for (var debate in debates) {
+//       final userData = await FirebaseFirestore.instance.collection('users').doc(debate['userId']).get();
+//       debatesAndHosts.add({
+//         'debate': debate,
+//         'hostName': userData['username'] ?? 'Unknown',
+//       });
+//     }
+
+//     return debatesAndHosts;
+//   }
 
   @override
   Widget build(BuildContext context) {
@@ -78,9 +113,9 @@ class ScheduledDebatesList extends StatelessWidget {
             return DebateCard(
               debate: debate,
               hostName: hostName,
-              onDelete: () {
-                // Widget.onDelete();
-              },
+              // onDelete: () {
+              //   Widget.onDelete();
+              // },
             );
           },
         );
@@ -88,7 +123,9 @@ class ScheduledDebatesList extends StatelessWidget {
     );
   }
 }
+// */
 
+//==========================================
 
 /*// updated hiya 1stmay 4am
 import 'package:flutter/material.dart';

@@ -26,21 +26,20 @@ Future<void> sendEmailNotification() async {
     final difference = scheduledDateTime.difference(DateTime.now()).inMinutes;
 
     // If the debate is scheduled in the next 5 minutes
-    if (difference <= 5) {
+    if (difference <= 60  && difference >0) {
   // Check if an email has already been sent for this debate
-  if (!debate.data()['emailSent']) {
+  if (debate.data()['emailSent'] == 'false') {
     // Fetch the user's email from Firestore
     var userData = await FirebaseFirestore.instance.collection('users').doc(userId).get();
     if (userData.exists) {
       final userEmail = userData.data()?['email'];
-
       // Create the email message
       final message = Message()
         ..from = Address(username, 'nexo')
         ..recipients.add(userEmail)
-        ..subject = 'Debate Notification :: ${DateTime.now()}'
-        ..text = 'Your debate is scheduled to start in 5 minutes.';
-
+        ..subject = 'Reminder for  ${debate.data()['title']}'
+        ..text = 'Your  ${debate.data()['title']} debate is scheduled to start in ${difference} minutes.';
+print(difference);
       // Try to send the email
       try {
         final sendReport = await send(message, smtpServer);

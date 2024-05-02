@@ -65,14 +65,14 @@ class HomeState extends State<Home> with WidgetsBindingObserver {
       page: Create_Debate(),
       // page: MyApp(),
     ),  
-    TabItem(
-      tabName: "Alerts",
-      icon: const Icon(
-        Icons.notifications,
-        size: 30,
-      ),
-      page: Activity(),
-    ),
+    // TabItem(
+    //   tabName: "Alerts",
+    //   icon: const Icon(
+    //     Icons.notifications,
+    //     size: 30,
+    //   ),
+    //   page: Activity(),
+    // ),
     TabItem(
       tabName: "Profile",
       icon: const Icon(

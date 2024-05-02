@@ -40,8 +40,9 @@ Future main() async {
 //   await Firebase.initializeApp(
 //     options: DefaultFirebaseOptions.currentPlatform,
 //   );
+//calling notification function in every 
   runApp(const MyApp());
-  Timer.periodic(Duration(minutes: 1000), (Timer t) => sendEmailNotification());
+  Timer.periodic(Duration(minutes: 5), (Timer t) => sendEmailNotification());
 }
 
 class MyApp extends StatelessWidget {
@@ -52,7 +53,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'GPT App',
+      title: 'NexoDeb8',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ), //used for first function(page)

@@ -21,6 +21,9 @@ class DebateDetailsPage extends StatefulWidget {
 
 class _DebateDetailsPageState extends State<DebateDetailsPage> {
   bool isHost = false;
+  bool isButtonEnabled = false;
+
+//disable start/join button after and before 20min of sheduled time
 
   @override
   void initState() {
@@ -94,6 +97,25 @@ class _DebateDetailsPageState extends State<DebateDetailsPage> {
           // // Compare the two values to determine if the current user is the host
           isHost = currentUserId == debateUserId;
           print(isHost);
+
+          //
+          // Get the scheduledDateTime from the debate data
+  Timestamp scheduledTimestamp = debateData['scheduledDateTime'];
+  DateTime scheduledDateTime = scheduledTimestamp.toDate();
+
+  // Get the current time
+  DateTime currentTime = DateTime.now();
+
+  // Calculate the start time and end time window for enabling the button
+  DateTime startTime = scheduledDateTime.subtract(Duration(minutes: 20));
+  DateTime endTime = scheduledDateTime.add(Duration(minutes: 20));
+
+  // Check if the current time is within the time window
+  bool isWithinTimeWindow = currentTime.isAfter(startTime) && currentTime.isBefore(endTime);
+
+  // Enable the button if the current time is within the time window and the user is the host
+  isButtonEnabled = isWithinTimeWindow;
+          //
 
           return FutureBuilder(
             future: _getHostName(debateData['userId']),
@@ -240,7 +262,37 @@ class _DebateDetailsPageState extends State<DebateDetailsPage> {
                     Center(
                       child: Container(
                         width: MediaQuery.of(context).size.width *
-                            0.8, // Set the width to 80% of the device width
+                            0.8, 
+    //enable and disables the button if not wwithinTime
+                        child: ElevatedButton(
+                          child: Text(isHost ? 'Start' : 'Join'),
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                              isButtonEnabled ? Colors.blue : Colors.grey.withOpacity(0.5),
+                            ),
+                            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                            shape: MaterialStateProperty.all<OutlinedBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18.0),
+                              ),
+                            ),
+                          ),
+                          onPressed: isButtonEnabled
+                              ? () {
+                                  if (ZegoUIKitPrebuiltLiveStreamingController().minimize.isMinimizing) {
+                                    return;
+                                  }
+
+                                  jumpToLivePage(
+                                    context,
+                                    liveID: controller,
+                                    isHost: isHost,
+                                  );
+                                }
+                              : null, // Set onPressed to null if button is disabled
+                        ),
+
+/*without enable and disable feature if before and after 20min
                         child: ElevatedButton(
                           child: Text(isHost ? 'Start' : 'Join'),
                           style: ButtonStyle(
@@ -270,7 +322,7 @@ class _DebateDetailsPageState extends State<DebateDetailsPage> {
                               isHost: isHost,
                             );
                           },
-                        ),
+                        ),*/
                       ),
                     ),
                     SizedBox(height: 20.0),

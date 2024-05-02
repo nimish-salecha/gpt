@@ -128,6 +128,7 @@ void dispose() {
               children: <Widget>[
                 CircleAvatar(
                   radius: 50,
+                  backgroundColor:Color.fromARGB(255, 32, 32, 70),
                   backgroundImage: NetworkImage(_profilePicUrl ??
                       'https://firebasestorage.googleapis.com/v0/b/gptt-6ae89.appspot.com/o/profile_pictures%2FProfile-PNG-File.png?alt=media&token=30c471f4-85b0-48b3-bde8-477364a329c5'),
                 ),
@@ -258,7 +259,7 @@ class PrivateDebates extends StatelessWidget {
 class PastDebates extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final currentTimePlus40Mins = DateTime.now().add(Duration(minutes: 40));
+    final currentTimePlus30Mins = DateTime.now().add(Duration(minutes: 30));
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -271,7 +272,7 @@ class PastDebates extends StatelessWidget {
             stream: _firestore.collection('debates')
                 .where('userId', isEqualTo: currentUserId)
                 .where('privacy', isEqualTo: 'Public')
-                .where('scheduledDateTime', isLessThan: currentTimePlus40Mins)
+                .where('scheduledDateTime', isLessThan: currentTimePlus30Mins)
                 .orderBy('scheduledDateTime', descending: true)
                 .snapshots(),
             builder: (context, snapshot) {

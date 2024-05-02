@@ -1,5 +1,4 @@
 //add sheduled debates option  
-//also add in past and future debate
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

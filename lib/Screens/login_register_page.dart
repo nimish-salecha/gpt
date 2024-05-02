@@ -334,8 +334,10 @@ Future<bool> isUsernameAlreadyTaken(String username) async {
       appBar: AppBar(
           title: Image.asset(
             'assets/nexo_logo.png',
-            height: dheight * 0.6,
-            width: dwidth * 0.5,
+            // height: dheight * 0.6,
+            // width: dwidth * 0.5,
+          height: 40,
+
           ),
         ),
          body: Center(

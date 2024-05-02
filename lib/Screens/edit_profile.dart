@@ -1,11 +1,8 @@
 // edit , update user profile
 
-//hiya updated 1st may 2pm
+//2nd may hiay 1am 
 
-//v3
-/*
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -191,150 +188,204 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blueGrey[100],
       appBar: AppBar(
-        title: Text('Edit Profile'),
+        backgroundColor: Color.fromARGB(255, 32, 32, 70), // Change header color
+        title: Text(
+          'Edit Profile',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [
           IconButton(
-            icon: Icon(Icons.save),
+            icon: Icon(Icons.save, color: Colors.white,),
             onPressed: () {
               updateProfile();
             },
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: Container(
         padding: EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              child: Stack(
+        decoration: BoxDecoration(
+          // color: Colors.blueGrey[100], // Change background color
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                alignment: Alignment.center,
+                child: Stack(
+                  children: [
+                    _profilePicUrl != null
+                        ? CircleAvatar(
+                            backgroundColor: Colors.blueGrey[100],
+                            backgroundImage: NetworkImage(_profilePicUrl!),
+                            radius: 50,
+                          )
+                        : CircleAvatar(
+                            backgroundColor: Colors.blueGrey[100],
+                            radius: 50,
+                            child: Icon(Icons.person,),
+                            
+                          ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: _uploadImage,
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color.fromARGB(255, 32, 32, 70),
+                          ),
+                          child: Icon(
+                            Icons.camera_alt,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  _profilePicUrl != null
-                      ? CircleAvatar(
-                          backgroundImage: NetworkImage(_profilePicUrl!),
-                          radius: 50,
-                        )
-                      : CircleAvatar(
-                          radius: 50,
-                          child: Icon(Icons.person),
-                        ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: _uploadImage,
-                      child: Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.blue,
-                        ),
-                        child: Icon(
-                          Icons.camera_alt,
-                          color: Colors.white,
-                        ),
+                  ElevatedButton(
+                    onPressed: _uploadImage,
+                    child: Text(
+                      'Add Pic',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(
+                          255, 32, 32, 70), // Change button color
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: _removeImage,
+                    child: Text(
+                      'Remove Pic',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(
+                          255, 32, 32, 70), // Change button color
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                controller: _usernameController,
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  fillColor: Colors.blueGrey[50], // Change text field color
+                  filled: true,
+                ),
+              ),
+              SizedBox(height: 20),
+              TextFormField(
+                controller: _bioController,
+                maxLines: 2,
+                maxLength: 20,
+                decoration: InputDecoration(
+                  labelText: 'Bio (up to 20 letter)',
+                  fillColor: Colors.blueGrey[50], // Change text field color
+                  filled: true,
+                ),
+              ),
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  Text(
+                    'Gender: ',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          Radio<String>(
+                            value: 'Male',
+                            groupValue: _gender,
+                            onChanged: (value) {
+                              setState(() {
+                                _gender = value;
+                              });
+                            },
+                          ),
+                          Text('Male'),
+                          Radio<String>(
+                            value: 'Female',
+                            groupValue: _gender,
+                            onChanged: (value) {
+                              setState(() {
+                                _gender = value;
+                              });
+                            },
+                          ),
+                          Text('Female'),
+                          Radio<String>(
+                            value: 'Other',
+                            groupValue: _gender,
+                            onChanged: (value) {
+                              setState(() {
+                                _gender = value;
+                              });
+                            },
+                          ),
+                          Text('Other'),
+                        ],
                       ),
                     ),
                   ),
                 ],
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: _uploadImage,
-                  child: Text('Add Pic'),
+              SizedBox(height: 20),
+              TextFormField(
+                keyboardType: TextInputType.number,
+                onChanged: (value) {
+                  setState(() {
+                    _age = int.tryParse(value);
+                  });
+                },
+                decoration: InputDecoration(
+                  labelText: 'Age: $_age',
+                  fillColor: Colors.blueGrey[50], // Change text field color
+                  filled: true,
                 ),
-                ElevatedButton(
-                  onPressed: _removeImage,
-                  child: Text('Remove Pic'),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: _usernameController,
-              decoration: InputDecoration(
-                labelText: 'Username',
-                fillColor: Colors.grey[100],
-                filled: true,
               ),
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              controller: _bioController,
-              maxLines: 2,
-              maxLength: 20,
-              decoration: InputDecoration(
-                labelText: 'Bio (up to 20 letter)',
-                fillColor: Colors.grey[200],
-                filled: true,
-              ),
-            ),
-            SizedBox(height: 20),
-            Row(
-              children: [
-                Text('Gender: '),
-                Radio<String>(
-                  value: 'Male',
-                  groupValue: _gender,
-                  onChanged: (value) {
-                    setState(() {
-                      _gender = value;
-                    });
-                  },
-                ),
-                Text('Male'),
-                Radio<String>(
-                  value: 'Female',
-                  groupValue: _gender,
-                  onChanged: (value) {
-                    setState(() {
-                      _gender = value;
-                    });
-                  },
-                ),
-                Text('Female'),
-                Radio<String>(
-                  value: 'Other',
-                  groupValue: _gender,
-                  onChanged: (value) {
-                    setState(() {
-                      _gender = value;
-                    });
-                  },
-                ),
-                Text('Other'),
-              ],
-            ),
-            TextFormField(
-              keyboardType: TextInputType.number,
-              onChanged: (value) {
-                setState(() {
-                  _age = int.tryParse(value);
-                });
-              },
-              decoration: InputDecoration(
-                labelText: 'Age: $_age',
-                fillColor: Colors.grey[200],
-                filled: true,
-              ),
-            ),
-            SizedBox(height: 20),
-          ],
+              SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-*/
 
 
 
-// /* working
+
+/* working  -- main
 //v2
 import 'dart:io';
 
@@ -647,7 +698,7 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 }
-// */
+*/
 
 ///================================================================================
 //gpt  v1 updated  -- error occured later of _uploadImage solved in V2

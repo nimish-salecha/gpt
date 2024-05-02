@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:gpt/screens/setting_pages/ThemeProvider.dart';
 import 'package:gpt/screens/setting_pages/change_pass.dart';
 import 'package:gpt/screens/setting_pages/delete_acc.dart';
-import 'package:gpt/screens/setting_pages/disbale_acc.dart';
 import 'package:gpt/screens/setting_pages/help.dart';
 import 'package:gpt/screens/setting_pages/legal.dart';
 import 'package:gpt/screens/setting_pages/termsofusepage.dart';
@@ -79,13 +78,13 @@ class Settings_tab extends StatelessWidget {
           },
           icon: Icons.lock,
         ),
-        SubOption(
-          title: 'Disable Account',
-          onTap: () {
-            Get.to(() => DisableAccountPage());
-          },
-          icon: Icons.block,
-        ),
+        // SubOption(
+        //   title: 'Disable Account',
+        //   onTap: () {
+        //     Get.to(() => DisableAccountPage());
+        //   },
+        //   icon: Icons.block,
+        // ),
         SubOption(
           title: 'Delete Account',
           onTap: () {

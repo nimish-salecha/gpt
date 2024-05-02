@@ -89,6 +89,8 @@ class _DebateSearchPageState extends State<DebateSearchPage> {
   }
 
   Widget _buildDebateCard(DocumentSnapshot debate) {
+    // String category = debate['category'] ?? 'sportd'; // Use empty string as default if category doesn't exist
+    String category = debate['category'];  
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -118,19 +120,96 @@ class _DebateSearchPageState extends State<DebateSearchPage> {
                   return Icon(Icons.error);
                 } else {
                   final thumbnailUrl = snapshot.data;
-                  return thumbnailUrl != null
-                      ? Image.network(
-                          thumbnailUrl,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: 150.0,
-                        )
-                      : Image.asset(
-                          'assets/category/debate.png',
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: 150.0,
-                        );
+                  if (thumbnailUrl != null) {
+                            // If image URL is available, show the image
+                            return Image.network(
+                              snapshot.data!,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: 150.0,
+                            );
+                          } else {
+                            // If image URL is not available, show default image based on category
+                            switch (category) {
+                              case 'Politics':
+                                return Image.asset(
+                                  'assets/category/politics.png',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 150.0,
+                                );
+                              case 'Entertainment':
+                                return Image.asset(
+                                  'assets/category/entertainment.png',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 150.0,
+                                );
+                              case 'Religious':
+                                return Image.asset(
+                                  'assets/category/relegious.png',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 150.0,
+                                );
+                              case 'Social Issues':
+                                return Image.asset(
+                                  'assets/category/social.png',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 150.0,
+                                );
+                              case 'Science and Technology':
+                                return Image.asset(
+                                  'assets/category/science.png',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 150.0,
+                                );
+                              case 'Environment':
+                                return Image.asset(
+                                  'assets/category/env.png',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 150.0,
+                                );
+                              case 'Education':
+                                return Image.asset(
+                                  'assets/category/edu.png',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 150.0,
+                                );
+                              case 'Health and Wellness':
+                                return Image.asset(
+                                  'assets/category/health.png',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 150.0,
+                                );
+                              case 'Sports':
+                                return Image.asset(
+                                  'assets/category/sports.png',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 150.0,
+                                );
+                              case 'Business and Economy':
+                                return Image.asset(
+                                  'assets/category/bussiness.png',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 150.0,
+                                );
+                              default:
+                                return Image.asset(
+                                  'assets/category/debate.png',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 150.0,
+                                );
+                            }
+                          }
                 }
               },
             ),
@@ -168,6 +247,233 @@ class _DebateSearchPageState extends State<DebateSearchPage> {
   }
 
 
+
+// /*  old only for mobile not for web
+  // Widget _buildSearchResults() {.......................
+
+  Future<String?> _getThumbnailUrl(String debateId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('debates')
+          .doc(debateId)
+          .get();
+      final data = snapshot.data();
+      if (data != null && data.containsKey('_thumbnailUrl')) {
+        return data['_thumbnailUrl'] as String?;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching thumbnail URL: $e');
+      return null;
+    }
+  }
+
+  Future<String> _getUserName(String userId) async {
+    try {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+      return userSnapshot['username'];
+    } catch (e) {
+      print('Error fetching username: $e');
+      return 'Unknown';
+    }
+  }
+
+
+// /* best till now   -- finds full username anad debate title
+void _searchDebates(String query) async {
+  if (query.isNotEmpty) {
+    try {
+      // Split the query into individual words
+      List<String> keywords = query.split(' ');
+
+      // Search by username if the query matches a username exactly
+      QuerySnapshot usernameExactQuerySnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('username', isEqualTo: query)
+              .get();
+
+      // If the query does not match a username exactly, search by title or category
+      QuerySnapshot titleQuerySnapshot = await FirebaseFirestore.instance
+          .collection('debates')
+          .where('title', isEqualTo: query)
+          .get();
+
+      // QuerySnapshot categoryQuerySnapshot = await FirebaseFirestore.instance
+      //     .collection('debates')
+      //     .where('category', arrayContainsAny: keywords)
+      //     .get();
+
+      // Combine all query snapshots
+      List<QueryDocumentSnapshot> allResults = [
+        ...titleQuerySnapshot.docs,
+        // ...categoryQuerySnapshot.docs,
+      ];
+
+      // Prioritize debates hosted by the user if username matches exactly
+      if (usernameExactQuerySnapshot.docs.isNotEmpty) {
+        List<QueryDocumentSnapshot> usernameResults = [];
+        for (QueryDocumentSnapshot doc in usernameExactQuerySnapshot.docs) {
+          QuerySnapshot result = await FirebaseFirestore.instance
+              .collection('debates')
+              .where('userId', isEqualTo: doc.id)
+              .get();
+          usernameResults.addAll(result.docs);
+        }
+        allResults.addAll(usernameResults);
+      }
+
+      // Filter out private debates
+      List<QueryDocumentSnapshot> publicResults = allResults
+          .where((doc) =>
+              (doc.data() as Map<String, dynamic>)['privacy'] != 'Private')
+          .toList();
+
+      // Remove duplicates
+      List<QueryDocumentSnapshot> uniqueResults =
+          publicResults.toSet().toList();
+
+      // Sort results based on relevance
+      uniqueResults.sort((a, b) {
+        String aTitle = (a.data() as Map<String, dynamic>)['title'];
+        String bTitle = (b.data() as Map<String, dynamic>)['title'];
+        int aScore = _calculateScore(aTitle, keywords);
+        int bScore = _calculateScore(bTitle, keywords);
+        return bScore.compareTo(aScore);
+      });
+
+      setState(() {
+        _searchResults = uniqueResults;
+      });
+    } catch (e) {
+      print('Error searching debates: $e');
+    }
+  } else {
+    setState(() {
+      _searchResults.clear();
+    });
+  }
+}
+int _calculateScore(String title, List<String> keywords) {
+  // Calculate a score based on the similarity of the title to the query
+  int score = 0;
+  String lowercaseTitle = title.toLowerCase();
+  for (String keyword in keywords) {
+    if (lowercaseTitle.contains(keyword.toLowerCase())) {
+      // Increase score if the keyword is found in the title
+      score += 10;
+      // Increase score further if the keyword matches at the beginning of the title
+      if (lowercaseTitle.startsWith(keyword.toLowerCase())) {
+        score += 5;
+      }
+    }
+  }
+  return score;
+}
+// */
+
+
+
+/*  void _searchDebates(String query) async {
+  if (query.isNotEmpty) {
+    try {
+      // Split the query into individual words
+      List<String> keywords = query.split(' ');
+
+      // Search by username if the query matches a username exactly
+      QuerySnapshot usernameExactQuerySnapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .where('username', isEqualTo: query)
+              .get();
+
+      // If the query does not match a username exactly, search by title or category
+      QuerySnapshot titleQuerySnapshot = await FirebaseFirestore.instance
+          .collection('debates')
+          .where('title', arrayContainsAny: keywords)
+          .get();
+
+      QuerySnapshot categoryQuerySnapshot = await FirebaseFirestore.instance
+          .collection('debates')
+          .where('category', arrayContainsAny: keywords)
+          .get();
+
+      // Combine all query snapshots
+      List<QueryDocumentSnapshot> allResults = [
+        ...titleQuerySnapshot.docs,
+        ...categoryQuerySnapshot.docs,
+      ];
+
+      // Prioritize debates hosted by the user if username matches exactly
+      if (usernameExactQuerySnapshot.docs.isNotEmpty) {
+        List<QueryDocumentSnapshot> usernameResults = [];
+        for (QueryDocumentSnapshot doc in usernameExactQuerySnapshot.docs) {
+          QuerySnapshot result = await FirebaseFirestore.instance
+              .collection('debates')
+              .where('userId', isEqualTo: doc.id)
+              .get();
+          usernameResults.addAll(result.docs);
+        }
+        allResults.addAll(usernameResults);
+      }
+
+      // Filter out private debates
+      List<QueryDocumentSnapshot> publicResults = allResults
+          .where((doc) =>
+              (doc.data() as Map<String, dynamic>)['privacy'] != 'Private')
+          .toList();
+
+      // Remove duplicates
+      List<QueryDocumentSnapshot> uniqueResults =
+          publicResults.toSet().toList();
+
+      // Sort results based on relevance
+      uniqueResults.sort((a, b) {
+        String aTitle = (a.data() as Map<String, dynamic>)['title'];
+        String bTitle = (b.data() as Map<String, dynamic>)['title'];
+        int aScore = _calculateScore(aTitle, keywords);
+        int bScore = _calculateScore(bTitle, keywords);
+        return bScore.compareTo(aScore);
+      });
+
+      setState(() {
+        _searchResults = uniqueResults;
+      });
+    } catch (e) {
+      print('Error searching debates: $e');
+    }
+  } else {
+    setState(() {
+      _searchResults.clear();
+    });
+  }
+}
+
+int _calculateScore(String title, List<String> keywords) {
+  // Calculate a score based on the similarity of the title to the query
+  int score = 0;
+  String lowercaseTitle = title.toLowerCase();
+  for (String keyword in keywords) {
+    if (lowercaseTitle.contains(keyword.toLowerCase())) {
+      // Increase score if the keyword is found in the title
+      score += 10;
+      // Increase score further if the keyword matches at the beginning of the title
+      if (lowercaseTitle.startsWith(keyword.toLowerCase())) {
+        score += 5;
+      }
+    }
+  }
+  return score;
+}*/
+
+// working but unable to find mult word debate and some more like this
+  // void _searchDebates(String query) async {.................
+  
+}
 
 /*  old only for mobile not for web
   Widget _buildSearchResults() {
@@ -269,130 +575,6 @@ class _DebateSearchPageState extends State<DebateSearchPage> {
     }
   }*/
 
-  Future<String?> _getThumbnailUrl(String debateId) async {
-    try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('debates')
-          .doc(debateId)
-          .get();
-      final data = snapshot.data();
-      if (data != null && data.containsKey('_thumbnailUrl')) {
-        return data['_thumbnailUrl'] as String?;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      print('Error fetching thumbnail URL: $e');
-      return null;
-    }
-  }
-
-  Future<String> _getUserName(String userId) async {
-    try {
-      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-      return userSnapshot['username'];
-    } catch (e) {
-      print('Error fetching username: $e');
-      return 'Unknown';
-    }
-  }
-
-  void _searchDebates(String query) async {
-  if (query.isNotEmpty) {
-    try {
-      // Split the query into individual words
-      List<String> keywords = query.split(' ');
-
-      // Search by username if the query matches a username exactly
-      QuerySnapshot usernameExactQuerySnapshot =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .where('username', isEqualTo: query)
-              .get();
-
-      // If the query does not match a username exactly, search by title or category
-      QuerySnapshot titleQuerySnapshot = await FirebaseFirestore.instance
-          .collection('debates')
-          .where('title', arrayContainsAny: keywords)
-          .get();
-
-      QuerySnapshot categoryQuerySnapshot = await FirebaseFirestore.instance
-          .collection('debates')
-          .where('category', arrayContainsAny: keywords)
-          .get();
-
-      // Combine all query snapshots
-      List<QueryDocumentSnapshot> allResults = [
-        ...titleQuerySnapshot.docs,
-        ...categoryQuerySnapshot.docs,
-      ];
-
-      // Prioritize debates hosted by the user if username matches exactly
-      if (usernameExactQuerySnapshot.docs.isNotEmpty) {
-        List<QueryDocumentSnapshot> usernameResults = [];
-        for (QueryDocumentSnapshot doc in usernameExactQuerySnapshot.docs) {
-          QuerySnapshot result = await FirebaseFirestore.instance
-              .collection('debates')
-              .where('userId', isEqualTo: doc.id)
-              .get();
-          usernameResults.addAll(result.docs);
-        }
-        allResults.addAll(usernameResults);
-      }
-
-      // Filter out private debates
-      List<QueryDocumentSnapshot> publicResults = allResults
-          .where((doc) =>
-              (doc.data() as Map<String, dynamic>)['privacy'] != 'Private')
-          .toList();
-
-      // Remove duplicates
-      List<QueryDocumentSnapshot> uniqueResults =
-          publicResults.toSet().toList();
-
-      // Sort results based on relevance
-      uniqueResults.sort((a, b) {
-        String aTitle = (a.data() as Map<String, dynamic>)['title'];
-        String bTitle = (b.data() as Map<String, dynamic>)['title'];
-        int aScore = _calculateScore(aTitle, keywords);
-        int bScore = _calculateScore(bTitle, keywords);
-        return bScore.compareTo(aScore);
-      });
-
-      setState(() {
-        _searchResults = uniqueResults;
-      });
-    } catch (e) {
-      print('Error searching debates: $e');
-    }
-  } else {
-    setState(() {
-      _searchResults.clear();
-    });
-  }
-}
-
-int _calculateScore(String title, List<String> keywords) {
-  // Calculate a score based on the similarity of the title to the query
-  int score = 0;
-  String lowercaseTitle = title.toLowerCase();
-  for (String keyword in keywords) {
-    if (lowercaseTitle.contains(keyword.toLowerCase())) {
-      // Increase score if the keyword is found in the title
-      score += 10;
-      // Increase score further if the keyword matches at the beginning of the title
-      if (lowercaseTitle.startsWith(keyword.toLowerCase())) {
-        score += 5;
-      }
-    }
-  }
-  return score;
-}
-
-
 /*  working but unable to find mult word debate and some more like this
   void _searchDebates(String query) async {
   if (query.isNotEmpty) {
@@ -432,8 +614,7 @@ int _calculateScore(String title, List<String> keywords) {
     usernameResults.addAll(result.docs);
   }
   allResults.addAll(usernameResults);
-}
-
+    }
 
       // Filter out private debates
       List<QueryDocumentSnapshot> publicResults = allResults
@@ -476,10 +657,11 @@ int _calculateScore(String title, String query) {
   }
   return score;
 }*/
-}
 
 
 
+
+//====================================================
 /*//v5 - nimish code working -- but unable to fetch thumbnail from firebae
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

@@ -30,7 +30,7 @@ class _PreDebateState extends State<PreDebate> {
   final TextEditingController _descriptionController = TextEditingController();
   File? _imageFile;
   String? _thumbnailUrl;
-  String _meetingCode = "abcdfgqw";
+  String _meetingCode = "xyzz";
   DateTime? _selectedDateTime;
   String? _selectedCategory; // Selected category
   String? _selectedPrivacy; //for public & private
@@ -94,6 +94,7 @@ class _PreDebateState extends State<PreDebate> {
           'category': _selectedCategory, // Add category field
           'privacy': _selectedPrivacy,
           'joincode': _meetingCode,
+          'emailSent': 'false',
           // Add other fields as needed
         });
 

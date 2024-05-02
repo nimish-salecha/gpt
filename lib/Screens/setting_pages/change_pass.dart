@@ -164,13 +164,36 @@ class _PasswordResetPageState extends State<PasswordResetPage> {
                 decoration: InputDecoration(labelText: 'Confirm New Password'),
               ),
               SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _resetPassword,
-                child: Text('Reset Password'),
+              Center(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8, // Set button width to 80% of screen width
+                  child: ElevatedButton(
+                    onPressed: _resetPassword,
+                    child: Text('Reset Password'),
+                    style: ElevatedButton.styleFrom(
+                      shape: StadiumBorder(),
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Color.fromARGB(255, 32, 32, 70),
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
               ),
-              ElevatedButton(
-                onPressed: _emailResetPassword,
-                child: Text('Send Reset Password Link'),
+              SizedBox(height: 16),
+              Center(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8, // Set button width to 80% of screen width
+                  child: ElevatedButton(
+                    onPressed: _emailResetPassword,
+                    child: Text('Send Reset Password Link'),
+                    style: ElevatedButton.styleFrom(
+                      shape: StadiumBorder(),
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Color.fromARGB(255, 32, 32, 70),
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
